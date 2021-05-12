@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Diary.Web.Data;
+using Diary.Web.Models;
 
 namespace Diary.Areas.Identity.Pages.Account
 {

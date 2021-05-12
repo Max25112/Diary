@@ -1,14 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace Diary.Web.Data
+namespace Diary.Web.Models
 {
     public class Student
     {
@@ -20,7 +15,8 @@ namespace Diary.Web.Data
         [Required()]
         public string Grade { get; set; }
         //[Required()]
-         
+
         public ApplicationUser User { get; set; }
     }
+
 }

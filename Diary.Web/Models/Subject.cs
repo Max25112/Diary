@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Diary.Web.Data
+namespace Diary.Web.Models
 {
     public class Subject
     {

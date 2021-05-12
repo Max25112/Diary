@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Diary.Web.Data;
-
+using Diary.Web.Models;
 namespace Diary.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
