@@ -30,8 +30,7 @@ namespace Diary.Web.Views.ViewModels
         [Compare("Password", ErrorMessage = "Пароли не совпадают")]
         [DataType(DataType.Password)]
         [Display(Name = "Подтвердить пароль")]
-        public string PasswordConfirm { get; set; }
+        public string ConfirmPassword { get; set; }
     }
-    [BindProperty]
     
 }
