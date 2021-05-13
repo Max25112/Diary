@@ -400,3 +400,5 @@ D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Diary.Web.genruntimeconfig.cache
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Student\Schedule.cshtml.g.cs
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Teacher\Index.cshtml.g.cs
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Student\Index.cshtml.g.cs
+D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Admin\Index.cshtml.g.cs
+D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Admin\Register.cshtml.g.cs

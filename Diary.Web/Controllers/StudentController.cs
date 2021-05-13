@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Diary.Web.Controllers
 {
-    public class Student : Controller
+    public class StudentController : Controller
     {
         // GET: Student
         public ActionResult Index()
-        {
+        {            
             return View();
         }
 
@@ -83,5 +83,6 @@ namespace Diary.Web.Controllers
                 return View();
             }
         }
+
     }
 }

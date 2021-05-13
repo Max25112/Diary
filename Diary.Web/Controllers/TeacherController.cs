@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Diary.Web.Controllers
 {
-    public class Teacher : Controller
+    public class TeacherController : Controller
     {
         // GET: Teacher
         public ActionResult Index()

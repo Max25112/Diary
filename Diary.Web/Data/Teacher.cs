@@ -8,20 +8,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Diary.Web.Models
+namespace Diary.Web.Data
 {
     public class Teacher
     {
-        //[Key]
-        //public int Id { get; set; }
-        [ForeignKey("ApplicationUser")]
-        public int UserId { get; set; }
-        //
+        [Key]
+        public int Id { get; set; }
         public string Post { get; set; }
         public List<Subject> Subjects { get; set; } = new List<Subject>();
-        //[Required()]
-        
-        [Required()]
+        public string UserId { get; set; }
+        [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
     }
 }

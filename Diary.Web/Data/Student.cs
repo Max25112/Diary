@@ -3,20 +3,21 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Diary.Web.Models
+namespace Diary.Web.Data
 {
     public class Student
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey("ApplicationUser")]
-        public int UserId { get; set; }
-        //
+        
+        public string UserId { get; set; }
+        
+        public int ClassId { get; set; }
         [Required()]
-        public string Grade { get; set; }
+        public Class Class { get; set; }
         //[Required()]
-
+        [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
     }
-
+    
 }
