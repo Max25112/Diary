@@ -14,14 +14,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Diary.Web.Data;
+using System.Data;
 using Diary.Web.Models;
 using Diary.Web.Views.ViewModels;
+
 namespace Diary.Web.Controllers
 {
+
     [Authorize(Roles = "Admin")]
+    
     public class AdminController : Controller
     {
-        public RegisterViewModel Input { get; set; }
+        public string message = "";
+        public RegisterViewModelApplicationUser Input { get; set; }
+        public string choice { get; set; }
         public IActionResult Index()
         {
             return View();
@@ -31,11 +37,17 @@ namespace Diary.Web.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModelApplicationUser model)
         {
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName, MiddleName = Input.MiddleName };
+                ApplicationDbContext db = new ApplicationDbContext();
+                //string connectionString = @"Data Source=(localdb)\\mssqllocaldb;Initial Catalog=Class;Integrated Security=True";
+                //DataContext db = new DataContext(connectionString);
+                //this.DataContext = Classes;
+                //var student = new Student { UserId=user.Id, Class=Input.Class};
+                //var teacher = new Teacher { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName, MiddleName = Input.MiddleName };
                 // добавляем пользователя
                 /*
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -56,5 +68,30 @@ namespace Diary.Web.Controllers
             }
             return View(model);
         }
+        private void my_button_Click(object sender)
+        {
+            if (choice=="teacher")
+                IsTeacher();
+            if (choice == "student")
+                IsStudent();
+            else message = "Выберите род деятельности";
+        }
+        public void IsTeacher()
+        {
+
+        }
+        public void IsStudent()
+        {
+
+        }
+        public IActionResult AddClass()
+        {
+            return View();
+        }
+        public IActionResult AddSubject()
+        {
+            return View();
+        }
+       
     }
 }

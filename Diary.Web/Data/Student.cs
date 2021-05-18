@@ -1,7 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace Diary.Web.Data
 {
@@ -15,7 +16,10 @@ namespace Diary.Web.Data
         public int ClassId { get; set; }
         [Required()]
         public Class Class { get; set; }
-        //[Required()]
+       /* public Student()
+        {
+            Class = new List<Class>();
+        }*/
         [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
     }

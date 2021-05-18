@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-
+using Diary.Web.Data;
 namespace Diary.Web.Views.ViewModels
 {
-    public class RegisterViewModel
+    public class RegisterViewModelApplicationUser
     {
         [Required]
         [EmailAddress]
@@ -31,6 +31,9 @@ namespace Diary.Web.Views.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Подтвердить пароль")]
         public string ConfirmPassword { get; set; }
+        public RegisterViewModelStudent student {get; set;}
+        public RegisterViewModelTeacher teacher { get; set; }
     }
-    
 }
+    
+
