@@ -1,9 +1,17 @@
 ﻿@page
-@model Diary.Web.Views.ViewModels.RegisterViewModelApplicationUser
+@model Diary.Web.ViewModels.RegisterViewModelApplicationUser
 @{
     ViewData["Title"] = "Register";
 }
+<script>
+    $('div').hide()
 
+    $('#cases').change(function () {
+        var value = this.value;
+        $('div').hide()
+        $('#' + this.value).show();
+    });
+</script>
 <h1>@ViewData["Title"]</h1>
 
 <div class="row">
@@ -41,26 +49,29 @@
                     <input asp-for="ConfirmPassword" class="form-control" />
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
-                <select asp-items="ViewBag.Choice" name="case" id="case-type">
+                <select name="cases" id="cases">
                     <option value="noChoice">Не выбранно</option>
                     <option value="teacher">Учитель</option>
                     <option value="student">Ученик</option>
                 </select>
-                @{/*
-                    if (IsStudent)
-                    {
-                        @Html.DropDownList("Class", new SelectList(, "Выберите пользователя")
-
-                    }
-                            if (IsTeacher)
-                            {
-                                @Html.DropDownList("user", new SelectList(, "Выберите пользователя")
-                            }
-                            else (IsNoChoice)
-                */}
-                 
+                <div class="noChoice" id="noChoice">
+                    <h4>Выберите класс пользователя</h4>
+                </div>
+                <div class="teacher" id="teacher">
+                    <label asp-for="teacher.Post"></label>
+                    <input asp-for="teacher.Post" class="form-control" />
+                    <span asp-validation-for="teacher.Post" class="text-danger"></span>
+                    @Html.DropDownList("Выберите", ViewBag.Subjects as SelectList)
+                </div>
+                <div class="student" id="student">
+                    <label asp-for="student.Class.Name"></label>
+                    <input asp-for="student.Class.Name" class="form-control" />
+                    <span asp-validation-for="student.Class.Name" class="text-danger"></span>
+                    @Html.DropDownList("Выберите", ViewBag.Classes as SelectList)
+                </div>
                 <button type="submit" class="btn btn-primary">Register</button>
-</form>
+                </div>
+        </form>
     </div>
 </div>
 

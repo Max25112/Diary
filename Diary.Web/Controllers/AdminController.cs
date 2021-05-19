@@ -16,7 +16,8 @@ using Microsoft.Extensions.Logging;
 using Diary.Web.Data;
 using System.Data;
 using Diary.Web.Models;
-using Diary.Web.Views.ViewModels;
+using Diary.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Diary.Web.Controllers
 {
@@ -25,6 +26,12 @@ namespace Diary.Web.Controllers
     
     public class AdminController : Controller
     {
+        private readonly ApplicationDbContext _db;
+
+        public AdminController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
         public string message = "";
         public RegisterViewModelApplicationUser Input { get; set; }
         public string choice { get; set; }
@@ -32,8 +39,13 @@ namespace Diary.Web.Controllers
         {
             return View();
         }
+        [HttpGet]
         public IActionResult Register()
         {
+            SelectList subjects = new SelectList(_db.Subjects);
+            ViewBag.Subjects = subjects;
+            SelectList classes = new SelectList(_db.Classes);
+            ViewBag.Classes = classes;
             return View();
         }
         [HttpPost]
@@ -41,14 +53,8 @@ namespace Diary.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName, MiddleName = Input.MiddleName };
-                ApplicationDbContext db = new ApplicationDbContext();
-                //string connectionString = @"Data Source=(localdb)\\mssqllocaldb;Initial Catalog=Class;Integrated Security=True";
-                //DataContext db = new DataContext(connectionString);
-                //this.DataContext = Classes;
-                //var student = new Student { UserId=user.Id, Class=Input.Class};
-                //var teacher = new Teacher { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName, MiddleName = Input.MiddleName };
-                // добавляем пользователя
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName, MiddleName = Input.MiddleName };// добавляем пользователя
+                var student = new Student { User = user, UserId = user.Id, Class = Input.student.Class};
                 /*
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -84,14 +90,26 @@ namespace Diary.Web.Controllers
         {
 
         }
+        [HttpGet]
         public IActionResult AddClass()
         {
             return View();
         }
+        [HttpGet]
         public IActionResult AddSubject()
         {
             return View();
         }
-       
+        [HttpPost]
+        public void AddClass(Class classs)
+        {
+            _db.Classes.Add(classs);
+            _db.SaveChanges();
+        }
+        [HttpPost]
+        public IActionResult AddSubject(Subject subject)
+        {
+            return View();
+        }
     }
 }

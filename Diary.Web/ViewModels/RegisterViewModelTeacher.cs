@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Diary.Web.Data;
 
-namespace Diary.Web.Views.ViewModels
+namespace Diary.Web.ViewModels
 {
     public class RegisterViewModelTeacher
     {

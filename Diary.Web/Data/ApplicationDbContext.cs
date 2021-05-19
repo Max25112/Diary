@@ -19,7 +19,7 @@ namespace Diary.Web.Data
         public DbSet<Homework> Homeworks { get; set; }
         public DbSet<HomeResult> HomeResults { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
-        
+        public DbSet<Class> Classes { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-
-namespace Diary.Web.Views.ViewModels
+using Diary.Web.Data;
+namespace Diary.Web.ViewModels
 {
-    public class SubjectViewModel
+    public class ClassViewModelcs
     {
         [Required()]
-        [Display(Name = "Название предмета")]
+        [Display(Name = "Название класса")]
         public string Name { get; set; }
     }
 }

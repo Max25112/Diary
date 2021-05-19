@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Diary.Web.Data;
-namespace Diary.Web.Views.ViewModels
+namespace Diary.Web.ViewModels
 {
     public class RegisterViewModelApplicationUser
     {
