@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Diary.Web.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 namespace Diary.Web.ViewModels
 {
     public class RegisterViewModelApplicationUser
@@ -31,9 +37,10 @@ namespace Diary.Web.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Подтвердить пароль")]
         public string ConfirmPassword { get; set; }
-        public RegisterViewModelStudent student {get; set;}
-        public RegisterViewModelTeacher teacher { get; set; }
+        public RegisterViewModelStudent Student {get; set;}
+        public RegisterViewModelTeacher Teacher { get; set; }
     }
+    
 }
     
 

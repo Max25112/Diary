@@ -21,8 +21,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Diary.Web.Controllers
 {
-
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     
     public class AdminController : Controller
     {
@@ -33,7 +32,6 @@ namespace Diary.Web.Controllers
             _db = db;
         }
         public string message = "";
-        public RegisterViewModelApplicationUser Input { get; set; }
         public string choice { get; set; }
         public IActionResult Index()
         {
@@ -53,8 +51,9 @@ namespace Diary.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName, MiddleName = Input.MiddleName };// добавляем пользователя
-                var student = new Student { User = user, UserId = user.Id, Class = Input.student.Class};
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, MiddleName = model.MiddleName };// добавляем пользователя
+                var student = new Student { User = user, UserId = user.Id, Class = model.Student.Class};
+                var teacher = new Teacher { User = user, UserId = user.Id, Subjects = model.Teacher.Subjects };
                 /*
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
