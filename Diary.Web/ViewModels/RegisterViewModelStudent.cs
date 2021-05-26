@@ -10,6 +10,7 @@ namespace Diary.Web.ViewModels
     public class RegisterViewModelStudent
     {
         [Required()]
-        public Class Class { get; set; }
+        [Display(Name = "Класс")]
+        public Class Classs{ get; set; }
     }
 }

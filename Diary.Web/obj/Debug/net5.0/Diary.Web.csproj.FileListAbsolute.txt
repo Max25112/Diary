@@ -404,3 +404,4 @@ D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Admin\Index.cshtml.g
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Admin\Register.cshtml.g.cs
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Admin\AddClass.cshtml.g.cs
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Admin\AddSubject.cshtml.g.cs
+D:\Project\VKR\Diary\Diary.Web\bin\Debug\net5.0\Scripts\package.json

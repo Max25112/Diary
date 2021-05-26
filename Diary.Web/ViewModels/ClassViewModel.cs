@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using Diary.Web.Data;
 namespace Diary.Web.ViewModels
 {
-    public class ClassViewModelcs
+    public class ClassViewModel
     {
         [Required()]
         [Display(Name = "Название класса")]

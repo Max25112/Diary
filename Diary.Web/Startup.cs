@@ -41,7 +41,9 @@ namespace Diary.Web
                 options.Password.RequiredUniqueChars = 0;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-            })
+            })                
+                .AddRoles<IdentityRole>()
+                .AddRoleManager<RoleManager<IdentityRole>>()
       .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
@@ -66,6 +68,12 @@ namespace Diary.Web
             app.UseRouting();
 
             app.UseAuthentication();
+
+            /*app.Use(async (context, next) =>
+            {
+                await next();
+            });*/
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -18,76 +17,123 @@ using System.Data;
 using Diary.Web.Models;
 using Diary.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
 namespace Diary.Web.Controllers
 {
-    //[Authorize(Roles = "Admin")]
-    
+    [Authorize(Roles = "Admin")]
+
     public class AdminController : Controller
     {
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
 
-        public AdminController(ApplicationDbContext db)
+        public AdminController(
+            ApplicationDbContext db,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            SignInManager<ApplicationUser> signInManager
+            )
         {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _signInManager = signInManager;
             _db = db;
         }
-        public string message = "";
-        public string choice { get; set; }
         public IActionResult Index()
         {
+
             return View();
         }
         [HttpGet]
         public IActionResult Register()
         {
-            SelectList subjects = new SelectList(_db.Subjects);
+            SelectList subjects = new SelectList(_db.Subjects, "Id", "Name");
             ViewBag.Subjects = subjects;
-            SelectList classes = new SelectList(_db.Classes);
+            SelectList classes = new SelectList(_db.Classes, "Id", "Name");
             ViewBag.Classes = classes;
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModelApplicationUser model)
+        public async Task<IActionResult> Register(RegisterViewModelApplicationUser model, string cases)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, MiddleName = model.MiddleName };// добавляем пользователя
-                var student = new Student { User = user, UserId = user.Id, Class = model.Student.Class};
-                var teacher = new Teacher { User = user, UserId = user.Id, Subjects = model.Teacher.Subjects };
-                /*
+
+                if (cases == "NoChoice")
+                {
+                    return View();
+                }
+
+                
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, MiddleName = model.MiddleName };// добавляем пользователя// , Student = student, Teacher=teacher
                 var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                var userRole = await _userManager.FindByIdAsync(user.Id);
+                /*  if (result.Succeeded)
+                   {
+                       // установка куки
+                       //await _signInManager.SignInAsync(user, false);
+                   }
+                   else
+                   {
+                       foreach (var error in result.Errors)
+                       {
+                           ModelState.AddModelError(string.Empty, error.Description);
+                       }
+                   }
+                  */
+                if (cases == "Teacher")
                 {
-                    // установка куки
-                    await _signInManager.SignInAsync(user, false);
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
+                    IEnumerable<string> role = new string[] { "Teacher" };
+                    await _userManager.AddToRolesAsync(user, role);
+
+                    List <Subject> Subs = new List<Subject>();
+                    foreach (var a in model.SubjectIds)
                     {
-                        ModelState.AddModelError(string.Empty, error.Description);
+                        string b = (from t in _db.Subjects // определяем каждый объект из teams как t
+                                    where t.Id == a//фильтрация по критерию
+                                    select t.Name).Single().ToString();
+                        Subs.Add(new Subject { Id = a, Name = b });
                     }
+                    var teacher = new Teacher
+                    {
+                        Post = model.TeacherPost,
+                        UserId = (from t in _db.Users // определяем каждый объект из teams как t//фильтрация по критерию
+                                  orderby t.Id
+                                  select t.Id).Last()
+                    };
+                    _db.Teachers.Add(teacher);
+                    foreach (var a in Subs)
+                        teacher.Subjects.Add(a);
+                    
+                    _db.SaveChanges();
                 }
-                */
+                if (cases == "Student")
+                {
+                    IEnumerable<string> role = new string[] { "Student" };
+                    await _userManager.AddToRolesAsync(user, role);
+                    
+                    //await _userManager.AddToRoleAsync(user, "Student");
+                    /*var Clas = new Class
+                    {
+                        Id =  model.ClassId,
+                        Name = (from t in _db.Classes // определяем каждый объект из teams как t
+                                where t.Id == model.ClassId//фильтрация по критерию
+                                select t.Name).Single().ToString()
+                    }; */
+                    var student = new Student
+                    {
+                        ClassId = model.ClassId,
+                        UserId = (from t in _db.Users // определяем каждый объект из teams как t//фильтрация по критерию
+                                  orderby t.Id
+                                  select t.Id).Last()
+
+                    };
+                    _db.Students.Add(student);
+                    _db.SaveChanges();
+                }
             }
-            return View(model);
-        }
-        private void my_button_Click(object sender)
-        {
-            if (choice=="teacher")
-                IsTeacher();
-            if (choice == "student")
-                IsStudent();
-            else message = "Выберите род деятельности";
-        }
-        public void IsTeacher()
-        {
-
-        }
-        public void IsStudent()
-        {
-
+            return RedirectToAction("Index", "Home");
         }
         [HttpGet]
         public IActionResult AddClass()
@@ -100,15 +146,20 @@ namespace Diary.Web.Controllers
             return View();
         }
         [HttpPost]
-        public void AddClass(Class classs)
+        public IActionResult AddClass(Class classs)
         {
             _db.Classes.Add(classs);
             _db.SaveChanges();
+            return View();
         }
         [HttpPost]
         public IActionResult AddSubject(Subject subject)
         {
+            _db.Subjects.Add(subject);
+            _db.SaveChanges();
             return View();
         }
+
     }
 }
+

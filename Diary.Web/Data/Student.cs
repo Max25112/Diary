@@ -16,10 +16,6 @@ namespace Diary.Web.Data
         public int ClassId { get; set; }
         [Required()]
         public Class Class { get; set; }
-       /* public Student()
-        {
-            Class = new List<Class>();
-        }*/
         [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
     }

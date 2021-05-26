@@ -1,21 +1,12 @@
 ﻿
 @model Diary.Web.ViewModels.RegisterViewModelApplicationUser
-
-
-
-<script>
-    $('div').hide()
-
-    $('#cases').change(function () {
-        var value = this.value;
-        $('div').hide()
-        $('#' + this.value).show();
-    });
-</script>
+@{
+    ViewData["Title"] = "Register";
+}
 <div class="row">
     <div class="col-md-4">
         <form method="post">
-            <h4>Create a new account.</h4>
+            <h4>Регистрация нового пользователя</h4>
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
@@ -48,25 +39,30 @@
                     <input asp-for="ConfirmPassword" class="form-control" />
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
-                <select name="cases" id="cases">
-                    <option value="noChoice">Не выбранно</option>
+                <select name="cases" id="cases" asp-controller="Admin" asp-action="Post">
+                    <option value="NoChoice">Не выбранно</option>
                     <option value="Teacher">Учитель</option>
                     <option value="Student">Ученик</option>
                 </select>
-                <div class="noChoice" id="noChoice">
+                <div class="NoChoice" id="NoChoice">
                     <h4>Выберите класс пользователя</h4>
                 </div>
                 <div class="Teacher" id="Teacher">
-                    <label asp-for="Teacher.Post"></label>
-                    <span asp-validation-for="Teacher.Post" class="text-danger"></span>
-                    @Html.DropDownList("Выберите", ViewBag.Subjects as SelectList)
+                    <label asp-for="TeacherPost"></label>
+                    <span asp-validation-for="TeacherPost" class="text-danger"></span>
+                    <input asp-for="TeacherPost" class="form-control" /><br />
+                    <label asp-for="SubjectIds"></label>
+                    <span asp-validation-for="SubjectIds" class="text-danger"></span>
+                    @{//Html.DropDownList("Выберите", ViewBag.Subjects as IEnumerable<SelectListItem>)
+                    }
+                    @Html.ListBoxFor(m => m.SubjectIds, ViewBag.Subjects as IEnumerable<SelectListItem>)
                 </div>
                 <div class="Student" id="Student">
-                    <label asp-for="Student.Class.Name"></label>
-                    <span asp-validation-for="Student.Class.Name" class="text-danger"></span>
-                    @Html.DropDownList("Выберите", ViewBag.Classes as SelectList)
+                    <label asp-for="ClassId"></label>
+                    <span asp-validation-for="ClassId" class="text-danger"></span>
+                    @Html.DropDownListFor(m => m.ClassId, ViewBag.Classes as IEnumerable<SelectListItem>)
                 </div>
-                <button type="submit" class="btn btn-primary">Register</button>
+                <button type="submit" class="btn btn-primary">Регистрация</button>
             </div>
         </form>
     </div>
@@ -74,4 +70,17 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // hide all the divs
+        $('#Teacher, #Student, #NoChoice').hide()
+
+        // Show and hide selected div
+        $('#cases').change(function () {
+            var value = this.value;
+            console.log('change', value)
+
+            $('#Teacher, #Student, #NoChoice').hide()
+            $('#' + this.value).show();
+        });
+    </script>
 }

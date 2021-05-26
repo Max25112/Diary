@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace Diary.Web.ViewModels
 {
     public class RegisterViewModelApplicationUser
@@ -37,8 +38,14 @@ namespace Diary.Web.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Подтвердить пароль")]
         public string ConfirmPassword { get; set; }
-        public RegisterViewModelStudent Student {get; set;}
-        public RegisterViewModelTeacher Teacher { get; set; }
+        [Display(Name = "Предмет")]
+        public List<int> SubjectIds { get; set; }
+        [Display(Name = "Должность")]
+        public string TeacherPost { get; set; }
+        [Display(Name = "Класс")]
+        public int ClassId { get; set; }
+        //public RegisterViewModelStudent Student {get; set;}
+        //public RegisterViewModelTeacher Teacher { get; set; }
     }
     
 }

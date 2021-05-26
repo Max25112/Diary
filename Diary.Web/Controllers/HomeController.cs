@@ -1,4 +1,6 @@
-﻿using Diary.Web.Models;
+﻿using Diary.Web.Data;
+using Diary.Web.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -23,8 +25,18 @@ namespace Diary.Web.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy([FromServices] RoleManager<IdentityRole> roleManager, [FromServices] UserManager<ApplicationUser> userManager,
+            [FromServices] ApplicationDbContext db)
         {
+            //roleManager.            
+
+            await roleManager.CreateAsync(new IdentityRole()
+            {
+                Name = "Student"
+            });
+            //var user = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
+            //await userManager.AddToRoleAsync(user, "Teacher");
+
             return View();
         }
 
