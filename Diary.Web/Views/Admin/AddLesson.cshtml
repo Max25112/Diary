@@ -45,6 +45,7 @@
                 <input asp-for="Cabinet" class="form-control" />
                 <span asp-validation-for="Cabinet" class="text-danger"></span>
             </div>
+            <button type="submit" class="btn btn-primary">Добавить</button>
         </form>
     </div>
 </div>
@@ -65,23 +66,29 @@
                     'Content-Type': 'application/json;charset=UTF-8'
                 }
             }).then(res => res.json())
-                .then(response =>
-                    console.log('Success:', JSON.stringify(response)))
-                //.catch(error => console.error('Error:', error));
-                .then(() => {
+                .then(response => {
+                    
                     var items = JSON.stringify(response);
-
-                    for (i = 0; i < items.length; ++i) {
-                        $('#SubjectId').append('<option value="' + i + '">' + items[i] + '</option>');
+                    var sub = JSON.parse(items);
+                    console.log('Success:', sub);
+                    console.log('Lenght:', sub.length);
+                    for (i = 0; i < sub.length; ++i) {
+                        $('#SubjectId').append('<option value="' + sub[i].id + '">' + sub[i].name + '</option>');
                     }
-                });
-        })
-            //$.each(items, function (key, value) {
-                        //    $('#Subject').append('<option value="' + key + '">' + value + '</option>');
-                        //});
+                })
+                .catch(error => console.error('Error:', error));
+            //.then(() => {
+            //    var items = JSON.stringify(response);
 
-                                             //for (i = 0; i < items.length; ++i) {
-                                             //      $('#Subject').append('<option value="' + i + '">' + items[i] + '</option>');
-                                             //   }
+
+            //});
+        })
+                    //$.each(items, function (key, value) {
+                                //    $('#Subject').append('<option value="' + key + '">' + value + '</option>');
+                                //});
+
+                                                     //for (i = 0; i < items.length; ++i) {
+                                                     //      $('#Subject').append('<option value="' + i + '">' + items[i] + '</option>');
+                                                     //   }
     </script>
 }

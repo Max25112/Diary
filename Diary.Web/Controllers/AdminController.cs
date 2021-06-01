@@ -24,6 +24,7 @@ using System;
 namespace Diary.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
+   
 
     public class AdminController : Controller
     {
@@ -190,7 +191,7 @@ namespace Diary.Web.Controllers
         [HttpPost]
         public IActionResult AddLesson(LessonModel model)
         {
-            var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order};
+            var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order, SubjectId=model.SubjectId};
             _db.Lessons.Add(lesson);
             _db.SaveChanges();
             return View();
@@ -202,15 +203,31 @@ namespace Diary.Web.Controllers
             var teacherSubject = _db.Teachers.Include("Subjects").Where(u=>u.Id == value).Select(u => new {
                 usub = u.Subjects
             }).ToList();
-            List<string> sub = new List<string>();
-            for (int i=0; i<teacherSubject.Count+1;i++)
+            //List<string> sub = new List<string>();
+            //for (int i=0; i<teacherSubject.Count+1;i++)
+            //{
+            //    sub.Add(teacherSubject[0].usub[i].Name);
+            //}
+            var sub = new List<Sub>();
+            for (int i = 0; i < teacherSubject.Count + 1; i++)
             {
-                sub.Add(teacherSubject[0].usub[i].Name);
+                sub.Add(new Sub(teacherSubject[0].usub[i].Id, teacherSubject[0].usub[i].Name));
             }
             var data = JsonConvert.SerializeObject(sub);
             return Json(sub);
         }
     }
+    public struct Sub
+    {
+        public Sub(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+        public int Id { get; private set; }
+        public string Name { get; private set; }
+    }
 }
+
 
 
