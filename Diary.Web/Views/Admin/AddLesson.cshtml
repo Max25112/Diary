@@ -1,0 +1,87 @@
+﻿@model Diary.Web.ViewModels.LessonModel
+@{
+    ViewData["Title"] = "Register";
+}
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="TeacherId"></label><br />
+                @Html.DropDownListFor(m => m.TeacherId, ViewBag.Teachers as IEnumerable<SelectListItem>)
+            </div>
+            <div class="form-group">
+                <label asp-for="ClassId"></label><br />
+                @Html.DropDownListFor(m => m.ClassId, ViewBag.Classes as IEnumerable<SelectListItem>)
+            </div>
+            <div class="form-group">
+                <label asp-for="SubjectId"></label><br />
+                @{//Html.DropDownListFor(m => m.SubjectId, ViewBag.Subjects as IEnumerable<SelectListItem>)
+                }
+                <select asp-for="SubjectId" id="SubjectId" name="SubjectId">
+                    <option value="0">Не выбран</option>
+                </select>
+            </div>
+            <label asp-for="Day"></label><br />
+            <select name="day" id="day">
+                <option value="1">Понедельник</option>
+                <option value="2">Вторник</option>
+                <option value="3">Среда</option>
+                <option value="4">Четверг</option>
+                <option value="5">Пятница</option>
+                <option value="6">Суббота</option>
+            </select><br />
+            <label asp-for="Order"></label><br />
+            <select name="order" id="order">
+                <option value="1">1 Урок</option>
+                <option value="2">2 Урок</option>
+                <option value="3">3 Урок</option>
+                <option value="4">4 Урок</option>
+                <option value="5">5 Урок</option>
+                <option value="6">6 Урок</option>
+                <option value="7">7 Урок</option>
+            </select><br />
+            <div class="form-group">
+                <label asp-for="Cabinet"></label><br />
+                <input asp-for="Cabinet" class="form-control" />
+                <span asp-validation-for="Cabinet" class="text-danger"></span>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        var url = '/admin/SelectSub';
+        var data = { TeacherId: '1' };
+        var select = document.querySelector("select");
+        var value = 1;
+        select.addEventListener('change', function (e) {
+            //console.log("Changed to: " + e.target.value)
+            fetch(url, {
+                method: 'POST', // or 'PUT'
+                body: JSON.stringify(e.target.value), // data can be `string` or {object}!
+                headers: {
+                    'Accept': 'application/json; charset=utf-8',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            }).then(res => res.json())
+                .then(response =>
+                    console.log('Success:', JSON.stringify(response)))
+                //.catch(error => console.error('Error:', error));
+                .then(() => {
+                    var items = JSON.stringify(response);
+
+                    for (i = 0; i < items.length; ++i) {
+                        $('#SubjectId').append('<option value="' + i + '">' + items[i] + '</option>');
+                    }
+                });
+        })
+            //$.each(items, function (key, value) {
+                        //    $('#Subject').append('<option value="' + key + '">' + value + '</option>');
+                        //});
+
+                                             //for (i = 0; i < items.length; ++i) {
+                                             //      $('#Subject').append('<option value="' + i + '">' + items[i] + '</option>');
+                                             //   }
+    </script>
+}

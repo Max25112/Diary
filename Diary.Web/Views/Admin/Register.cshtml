@@ -11,18 +11,19 @@
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <div class="form-group">
+                    <label asp-for="LastName"></label><br />
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="FirstName"></label>
                     <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="MiddleName"></label><br />
                     <input asp-for="MiddleName" class="form-control" />
                     <span asp-validation-for="MiddleName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="LastName"></label><br />
-                    <input asp-for="LastName" class="form-control" />
-                    <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Email"></label><br />
@@ -43,7 +44,7 @@
                     <option value="NoChoice">Не выбранно</option>
                     <option value="Teacher">Учитель</option>
                     <option value="Student">Ученик</option>
-                </select>
+                </select><br />
                 <div class="NoChoice" id="NoChoice">
                     <h4>Выберите класс пользователя</h4>
                 </div>

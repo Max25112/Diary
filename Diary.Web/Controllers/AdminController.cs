@@ -17,6 +17,10 @@ using System.Data;
 using Diary.Web.Models;
 using Diary.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System;
+
 namespace Diary.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
@@ -65,7 +69,7 @@ namespace Diary.Web.Controllers
                     return View();
                 }
 
-                
+
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, MiddleName = model.MiddleName };// добавляем пользователя// , Student = student, Teacher=teacher
                 var result = await _userManager.CreateAsync(user, model.Password);
                 var userRole = await _userManager.FindByIdAsync(user.Id);
@@ -87,7 +91,7 @@ namespace Diary.Web.Controllers
                     IEnumerable<string> role = new string[] { "Teacher" };
                     await _userManager.AddToRolesAsync(user, role);
 
-                    List <Subject> Subs = new List<Subject>();
+                    List<Subject> Subs = new List<Subject>();
                     foreach (var a in model.SubjectIds)
                     {
                         string b = (from t in _db.Subjects // определяем каждый объект из teams как t
@@ -105,14 +109,14 @@ namespace Diary.Web.Controllers
                     _db.Teachers.Add(teacher);
                     foreach (var a in Subs)
                         teacher.Subjects.Add(a);
-                    
+
                     _db.SaveChanges();
                 }
                 if (cases == "Student")
                 {
                     IEnumerable<string> role = new string[] { "Student" };
                     await _userManager.AddToRolesAsync(user, role);
-                    
+
                     //await _userManager.AddToRoleAsync(user, "Student");
                     /*var Clas = new Class
                     {
@@ -159,7 +163,54 @@ namespace Diary.Web.Controllers
             _db.SaveChanges();
             return View();
         }
-
+        [HttpGet]
+        public IActionResult AddLesson()
+        {
+            var teacherSubject = _db.Teachers.Include("Subjects").Select(u => new {
+                Id = u.Id,
+                usub = u.Subjects,
+            }).ToList();
+            ViewBag.TeacherSubject = teacherSubject;
+            SelectList classes = new SelectList(_db.Classes, "Id", "Name");
+            ViewBag.Classes = classes;
+            var teaherFIO = from t in _db.Teachers
+                            join u in _db.Users on t.UserId equals u.Id
+                            select new
+                            {
+                                FIO = u.LastName + " " + u.FirstName + " " + u.MiddleName ,
+                                Id = t.Id
+                            };
+            SelectList teachers = new SelectList(teaherFIO, "Id", "FIO");
+            ViewBag.Teachers = teachers;
+            SelectList subjects = new SelectList(_db.Subjects, "Id", "Name");
+            ViewBag.Subjects = subjects;
+            
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddLesson(LessonModel model)
+        {
+            var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order};
+            _db.Lessons.Add(lesson);
+            _db.SaveChanges();
+            return View();
+        }
+        [HttpPost] 
+        public JsonResult SelectSub([FromBody] string TeacherId)
+        {
+            int value = Convert.ToInt32(TeacherId);
+            var teacherSubject = _db.Teachers.Include("Subjects").Where(u=>u.Id == value).Select(u => new {
+                usub = u.Subjects
+            }).ToList();
+            List<string> sub = new List<string>();
+            for (int i=0; i<teacherSubject.Count+1;i++)
+            {
+                sub.Add(teacherSubject[0].usub[i].Name);
+            }
+            var data = JsonConvert.SerializeObject(sub);
+            return Json(sub);
+        }
     }
 }
+
 
