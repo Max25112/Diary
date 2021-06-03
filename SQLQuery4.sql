@@ -1,11 +1,13 @@
 --insert into AspNetRoles(Id) values ('Admin'), ('Teacher'), ('Student')
 USE  Diary
 insert into dbo.AspNetUserRoles values ('786cc51a-60f9-415d-b4ab-05cb4368404b', 'Admin')
-select AspNetUsers.Id, FirstName, MiddleName, LastName, AspNetRoles.Name from AspNetUserRoles, AspNetUsers, AspNetRoles where AspNetUsers.id=AspNetUserRoles.UserId AND AspNetUserRoles.RoleId = AspNetRoles.Id
+select AspNetUsers.Id, FirstName, MiddleName, LastName, AspNetRoles.Name, Email, PasswordHash from AspNetUserRoles, AspNetUsers, AspNetRoles where AspNetUsers.id=AspNetUserRoles.UserId AND AspNetUserRoles.RoleId = AspNetRoles.Id
 select * from  Teachers
 select * from AspNetRoles
 select * from  Subjects 
 select * from  SubjectTeacher, Subjects, Teachers where SubjectTeacher.SubjectsId=Subjects.Id AND SubjectTeacher.TeachersId=Teachers.Id
+
+
 select * from Classes
 select * from AspNetRoles
 select * from AspNetUserRoles

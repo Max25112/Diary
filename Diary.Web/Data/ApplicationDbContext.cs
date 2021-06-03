@@ -86,4 +86,13 @@ namespace Diary.Web.Data
         public List<Attachment> Attachments { get; set; } = new List<Attachment>();
         // public File {get;set;}
     }
+    public class TableLessons
+    {
+        public int Id { get; set; }
+        public string FIO { get; set; }
+        public string ClassName { get; set; }
+        public string SubjectName { get; set; }
+        public string Cabinet { get; set; }
+        public int Order { get; set; }
+    }
 }

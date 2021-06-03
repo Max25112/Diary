@@ -1,20 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using Diary.Web.Data;
 using System.Data;
-using Diary.Web.Models;
 using Diary.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -132,7 +123,6 @@ namespace Diary.Web.Controllers
                         UserId = (from t in _db.Users // определяем каждый объект из teams как t//фильтрация по критерию
                                   orderby t.Id
                                   select t.Id).Last()
-
                     };
                     _db.Students.Add(student);
                     _db.SaveChanges();
@@ -191,7 +181,9 @@ namespace Diary.Web.Controllers
         [HttpPost]
         public IActionResult AddLesson(LessonModel model)
         {
+             
             var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order, SubjectId=model.SubjectId};
+            
             _db.Lessons.Add(lesson);
             _db.SaveChanges();
             return View();
@@ -203,11 +195,7 @@ namespace Diary.Web.Controllers
             var teacherSubject = _db.Teachers.Include("Subjects").Where(u=>u.Id == value).Select(u => new {
                 usub = u.Subjects
             }).ToList();
-            //List<string> sub = new List<string>();
-            //for (int i=0; i<teacherSubject.Count+1;i++)
-            //{
-            //    sub.Add(teacherSubject[0].usub[i].Name);
-            //}
+
             var sub = new List<Sub>();
             for (int i = 0; i < teacherSubject.Count + 1; i++)
             {
