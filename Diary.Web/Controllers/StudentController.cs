@@ -1,88 +1,59 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Diary.Web.Data;
+using System.Security.Claims;
+using System;
 
 namespace Diary.Web.Controllers
 {
     public class StudentController : Controller
     {
+        private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
+        public StudentController(ApplicationDbContext db,
+           UserManager<ApplicationUser> userManager)
+        {
+            _db = db;
+            _userManager = userManager;
+        }
         // GET: Student
         public ActionResult Index()
         {            
             return View();
         }
-
-        // GET: Student/Details/5
-        public ActionResult Details(int id)
+        public IActionResult ViewLesson()
         {
-            return View();
-        }
-
-        // GET: Student/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Student/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());//.Single()
+            Dictionary<int, List<TableLessons>> DictLessons = new Dictionary<int, List<TableLessons>>(6);
+            var ListLessons = _db.Lessons.Select(x => new TableLessons
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
+                Id = x.Id,
+                FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
+                ClassName = x.Class.Name,
+                SubjectName = x.Subject.Name,
+                Cabinet = x.Cabinet,
+                Order = x.Order
+            }).ToList();
+            for (int i = 1; i <= 6; i++)
             {
-                return View();
+                DictLessons.Add(i,
+                    _db.Lessons.Where(x => x.Day == i).Where(x => x.ClassId == classId).Select(x => new TableLessons
+                    {
+                        Id = x.Id,
+                        FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
+                        ClassName = x.Class.Name,
+                        SubjectName = x.Subject.Name,
+                        Cabinet = x.Cabinet,
+                        Order = x.Order
+                    }).OrderBy(i => i.Order).ToList());
             }
+            return View(DictLessons);
         }
 
-        // GET: Student/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Student/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Student/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Student/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
     }
 }

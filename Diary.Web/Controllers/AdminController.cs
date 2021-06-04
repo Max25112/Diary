@@ -15,8 +15,6 @@ using System;
 namespace Diary.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
-   
-
     public class AdminController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -55,29 +53,14 @@ namespace Diary.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 if (cases == "NoChoice")
                 {
                     return View();
                 }
-
-
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, MiddleName = model.MiddleName };// добавляем пользователя// , Student = student, Teacher=teacher
                 var result = await _userManager.CreateAsync(user, model.Password);
-                var userRole = await _userManager.FindByIdAsync(user.Id);
-                /*  if (result.Succeeded)
-                   {
-                       // установка куки
-                       //await _signInManager.SignInAsync(user, false);
-                   }
-                   else
-                   {
-                       foreach (var error in result.Errors)
-                       {
-                           ModelState.AddModelError(string.Empty, error.Description);
-                       }
-                   }
-                  */
+                var userId =  _db.Users.Where(x => x.Email == user.Email).Select(x => x.Id).Single().ToString();
+                var userRole = await _userManager.FindByIdAsync(userId);
                 if (cases == "Teacher")
                 {
                     IEnumerable<string> role = new string[] { "Teacher" };
@@ -86,17 +69,15 @@ namespace Diary.Web.Controllers
                     List<Subject> Subs = new List<Subject>();
                     foreach (var a in model.SubjectIds)
                     {
-                        string b = (from t in _db.Subjects // определяем каждый объект из teams как t
-                                    where t.Id == a//фильтрация по критерию
+                        string b = (from t in _db.Subjects 
+                                    where t.Id == a
                                     select t.Name).Single().ToString();
                         Subs.Add(new Subject { Id = a, Name = b });
                     }
                     var teacher = new Teacher
                     {
                         Post = model.TeacherPost,
-                        UserId = (from t in _db.Users // определяем каждый объект из teams как t//фильтрация по критерию
-                                  orderby t.Id
-                                  select t.Id).Last()
+                        UserId = _db.Users.Where(x => x.Email == user.Email).Select(x => x.Id).Single().ToString()
                     };
                     _db.Teachers.Add(teacher);
                     foreach (var a in Subs)
@@ -108,21 +89,10 @@ namespace Diary.Web.Controllers
                 {
                     IEnumerable<string> role = new string[] { "Student" };
                     await _userManager.AddToRolesAsync(user, role);
-
-                    //await _userManager.AddToRoleAsync(user, "Student");
-                    /*var Clas = new Class
-                    {
-                        Id =  model.ClassId,
-                        Name = (from t in _db.Classes // определяем каждый объект из teams как t
-                                where t.Id == model.ClassId//фильтрация по критерию
-                                select t.Name).Single().ToString()
-                    }; */
                     var student = new Student
                     {
                         ClassId = model.ClassId,
-                        UserId = (from t in _db.Users // определяем каждый объект из teams как t//фильтрация по критерию
-                                  orderby t.Id
-                                  select t.Id).Last()
+                        UserId = _db.Users.Where(x => x.Email == user.Email).Select(x => x.Id).Single().ToString()
                     };
                     _db.Students.Add(student);
                     _db.SaveChanges();
@@ -181,9 +151,7 @@ namespace Diary.Web.Controllers
         [HttpPost]
         public IActionResult AddLesson(LessonModel model)
         {
-             
-            var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order, SubjectId=model.SubjectId};
-            
+            var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order, SubjectId=model.SubjectId};   
             _db.Lessons.Add(lesson);
             _db.SaveChanges();
             return View();
@@ -216,6 +184,3 @@ namespace Diary.Web.Controllers
         public string Name { get; private set; }
     }
 }
-
-
-
