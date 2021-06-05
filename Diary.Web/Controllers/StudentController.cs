@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Identity;
 using Diary.Web.Data;
 using System.Security.Claims;
 using System;
-
+using Diary.Web.ViewModels;
 namespace Diary.Web.Controllers
 {
+    [Authorize(Roles = "Student")]
     public class StudentController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -53,7 +54,19 @@ namespace Diary.Web.Controllers
             }
             return View(DictLessons);
         }
-
-
+        [HttpGet]
+        public IActionResult ViewHomework()
+        {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());
+            var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId).Select(x => new ViewHomework
+            {
+                Title = x.Title,
+                FIO= x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
+                TaskText = x.TaskText,
+                Deadline = x.Deadline,
+            }).ToList());
+            return View(homeworks);
+        }
     }
 }

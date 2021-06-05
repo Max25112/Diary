@@ -1,0 +1,25 @@
+﻿@model List<Diary.Web.ViewModels.ViewHomework>
+@{
+    ViewData["Title"] = "ViewHomework";
+}
+<div class="row">
+    <div class="col-md-4">
+        <table border="1">
+            <tr>
+                <td>Название</td>
+                <td>Класс</td>
+                <td>Задание</td>
+                <td>Время</td>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ClassName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.TaskText)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Deadline)</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

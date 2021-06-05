@@ -1,0 +1,33 @@
+﻿@model Diary.Web.ViewModels.HomeworkViewModel
+@{
+    ViewData["Title"] = "AddHomework";
+}
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="ClassId"></label><br />
+                @Html.DropDownListFor(m => m.ClassId, ViewBag.Classes as IEnumerable<SelectListItem>)
+            </div>
+            <div class="form-group">
+                <label asp-for="Title"></label><br />
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TaskText"></label><br />
+                <textarea asp-for="TaskText" rows="5" cols="90"></textarea>
+                <span asp-validation-for="TaskText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date"></label><br />
+                <input asp-for="Date" type="date" id="date" name="date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+                <label asp-for="Time"></label><br />
+                <input asp-for="Time" type="time" id="time" name="time" class="form-control" />
+                <span asp-validation-for="Time" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </form>
+    </div>
+</div>

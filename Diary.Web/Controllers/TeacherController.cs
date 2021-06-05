@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Diary.Web.Data;
+using System.Data;
+using Diary.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Diary.Web.Controllers
 {
@@ -51,6 +56,38 @@ namespace Diary.Web.Controllers
                     }).OrderBy(i => i.Order).ToList());
             }
             return View(DictLessons);
+        }
+        [HttpGet]
+        public IActionResult AddHomework()
+        {
+            SelectList classes = new(_db.Classes, "Id", "Name");
+            ViewBag.Classes = classes;
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddHomework(HomeworkViewModel model)
+        {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
+            var time = model.Date.Add(model.Time.TimeOfDay);
+            var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, Deadline = time, Title = model.Title };
+            _db.Homeworks.Add(homework);
+            _db.SaveChanges();
+            return RedirectToAction("AddHomework", "Teacher");
+        }
+        [HttpGet]
+        public IActionResult ViewHomework()
+        {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
+            var homeworks = (_db.Homeworks.Where(x => x.TeacherId == tId).Select(x => new ViewHomework
+            {
+                Title = x.Title,
+                ClassName = x.Class.Name,
+                TaskText = x.TaskText,
+                Deadline = x.Deadline,
+            }).ToList());
+            return View(homeworks);
         }
     }
 }

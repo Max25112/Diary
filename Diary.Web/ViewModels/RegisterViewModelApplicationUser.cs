@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
-using Diary.Web.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authorization;
-using System.ComponentModel.DataAnnotations.Schema;
 namespace Diary.Web.ViewModels
 {
     public class RegisterViewModelApplicationUser

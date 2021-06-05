@@ -58,6 +58,7 @@ namespace Diary.Web.Data
         public int Id { get; set; }
         [Required()]
         public int TeacherId { get; set; }
+        public Teacher Teacher { get; set; }
         public int ClassId { get; set; }
         [Required()]
         public Class Class { get; set; }//Класс
@@ -86,7 +87,7 @@ namespace Diary.Web.Data
         public List<Attachment> Attachments { get; set; } = new List<Attachment>();
         // public File {get;set;}
     }
-    public class TableLessons
+    /*public class TableLessons
     {
         public int Id { get; set; }
         public string FIO { get; set; }
@@ -94,5 +95,5 @@ namespace Diary.Web.Data
         public string SubjectName { get; set; }
         public string Cabinet { get; set; }
         public int Order { get; set; }
-    }
+    }*/
 }
