@@ -10,6 +10,7 @@
                 <td>Учитель</td>
                 <td>Задание</td>
                 <td>Время</td>
+                <td>Ответ</td>
             </tr>
             @foreach (var item in Model)
             {
@@ -18,6 +19,7 @@
                     <td>@Html.DisplayFor(modelItem => item.FIO)</td>
                     <td>@Html.DisplayFor(modelItem => item.TaskText)</td>
                     <td>@Html.DisplayFor(modelItem => item.Deadline)</td>
+                    <td>@Html.ActionLink("Ответ", "Response", new { HomeworkItem=item }, null)</td>
                 </tr>
             }
         </table>

@@ -8,6 +8,8 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using Diary.Web.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Diary.Web.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -17,17 +19,18 @@ namespace Diary.Web.Data
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Homework> Homeworks { get; set; }
-        public DbSet<HomeResult> HomeResults { get; set; }
+        public DbSet<HomeworkResult> HomeworkResults { get; set; }
+
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Class> Classes { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            
+
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
-        {            
+        {
             base.OnModelCreating(builder);
         }
     }
@@ -65,7 +68,8 @@ namespace Diary.Web.Data
         public string Title { get; set; }
         public string TaskText { get; set; }
         public DateTime Deadline { get; set; }
-        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
+        public List<HomeworkResult> HomeworkResults { get; set; } = new();
+        public List<Attachment> Attachments { get; set; } = new();
         // public File {get;set;}
     }
 
@@ -75,17 +79,26 @@ namespace Diary.Web.Data
         public string Name { get; set; }
         public byte[] Data { get; set; }
     }
-    
-    public class HomeResult
+
+    public class HomeworkResult
     {
         public int Id { get; set; }
         [Required()]
+        public string Title { get; set; }
+        public int Grade { get; set; }
+        [Required()]
         public int TeacherId { get; set; }
+        public Teacher Teacher { get; set; }
+        public int ClassId { get; set; }
+        [Required()]
+        public Class Class { get; set; }//Класс
         [Required()]
         public int StudentId { get; set; }
-        public string Title { get; set; }
-        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
-        // public File {get;set;}
+        public Student Student { get; set; }
+        [Required()]
+        public int HomeworkId { get; set; }
+        public Homework Homework { get; set; }
+        public List<Attachment> Attachments { get; set; } = new ();
     }
     /*public class TableLessons
     {

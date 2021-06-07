@@ -410,3 +410,5 @@ D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Student\ViewLesson.c
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Teacher\AddHomework.cshtml.g.cs
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Teacher\ViewHomework.cshtml.g.cs
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Student\ViewHomework.cshtml.g.cs
+D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Diary.Web.csproj.AssemblyReference.cache
+D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Student\Response.cshtml.g.cs

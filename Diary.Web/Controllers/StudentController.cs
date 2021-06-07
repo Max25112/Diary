@@ -61,12 +61,23 @@ namespace Diary.Web.Controllers
             var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());
             var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId).Select(x => new ViewHomework
             {
+                Id=x.Id,
                 Title = x.Title,
                 FIO= x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
                 TaskText = x.TaskText,
                 Deadline = x.Deadline,
             }).ToList());
             return View(homeworks);
+        }
+        [HttpGet]
+        public IActionResult Response(Homework homework)
+        {
+            /*HomeworkResult homeworkResult = (HomeworkResult)_db.Homeworks.Where(x => x.Id == HomeworkId).Select(x=> new HomeworkResult {
+            TeacherId=x.TeacherId,
+            StudentId=
+
+            });*/
+            return View();
         }
     }
 }
