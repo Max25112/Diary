@@ -11,7 +11,7 @@ AND Students.ClassId=Classes.Id AND Lessons.ClassId = Classes.Id
 select * from  Students inner join AspNetUsers on Students.UserId=AspNetUsers.Id
 select * from  Teachers inner join AspNetUsers on Teachers.UserId=AspNetUsers.Id
 select * from Homeworks
-select * from Lessons
+select [Order] from Lessons
 select * from AspNetRoles
 select * from AspNetUserRoles
 select * from AspNetUserRoles

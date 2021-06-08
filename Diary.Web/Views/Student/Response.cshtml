@@ -1,1 +1,10 @@
-﻿
+﻿@model Diary.Web.Data.Homework
+@{
+    ViewData["Title"] = "Response";
+}
+<div>
+    <p>Название: @Html.DisplayFor(modelItem => Model.Title)</p>
+    <p>Предмет:@ViewData["SubjectName"]</p>
+    <p>Задание:@Html.DisplayFor(modelItem => Model.TaskText)</p>
+    <p style="color:red">@Html.DisplayFor(modelItem => Model.Deadline)</p>
+</div>

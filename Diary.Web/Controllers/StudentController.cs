@@ -22,7 +22,7 @@ namespace Diary.Web.Controllers
         }
         // GET: Student
         public ActionResult Index()
-        {            
+        {
             return View();
         }
         public IActionResult ViewLesson()
@@ -61,22 +61,26 @@ namespace Diary.Web.Controllers
             var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());
             var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId).Select(x => new ViewHomework
             {
-                Id=x.Id,
+                Id = x.Id,
                 Title = x.Title,
-                FIO= x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
+                FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
+                SubjectName = x.Subject.Name,
                 TaskText = x.TaskText,
                 Deadline = x.Deadline,
             }).ToList());
             return View(homeworks);
         }
         [HttpGet]
-        public IActionResult Response(Homework homework)
+        public new IActionResult Response(int HomeworkId)
         {
-            /*HomeworkResult homeworkResult = (HomeworkResult)_db.Homeworks.Where(x => x.Id == HomeworkId).Select(x=> new HomeworkResult {
-            TeacherId=x.TeacherId,
-            StudentId=
-
-            });*/
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var homework = _db.Homeworks.Where(x => x.Id == HomeworkId).Single();
+            ViewData["SubjectName"] = _db.Subjects.Where(x => x.Id == homework.SubjectId).Select(x => x.Name).Single().ToString();
+            return View(homework);
+        }
+        [HttpPost]
+        public new IActionResult Response(HomeworkResult homeworkResult)
+        {
             return View();
         }
     }

@@ -62,6 +62,8 @@ namespace Diary.Web.Data
         [Required()]
         public int TeacherId { get; set; }
         public Teacher Teacher { get; set; }
+        public int SubjectId { get; set; }
+        public Subject Subject { get; set; }
         public int ClassId { get; set; }
         [Required()]
         public Class Class { get; set; }//Класс
@@ -92,6 +94,8 @@ namespace Diary.Web.Data
         public int ClassId { get; set; }
         [Required()]
         public Class Class { get; set; }//Класс
+        public int SubjectId { get; set; }
+        public Subject Subject { get; set; }
         [Required()]
         public int StudentId { get; set; }
         public Student Student { get; set; }
@@ -100,13 +104,4 @@ namespace Diary.Web.Data
         public Homework Homework { get; set; }
         public List<Attachment> Attachments { get; set; } = new ();
     }
-    /*public class TableLessons
-    {
-        public int Id { get; set; }
-        public string FIO { get; set; }
-        public string ClassName { get; set; }
-        public string SubjectName { get; set; }
-        public string Cabinet { get; set; }
-        public int Order { get; set; }
-    }*/
 }

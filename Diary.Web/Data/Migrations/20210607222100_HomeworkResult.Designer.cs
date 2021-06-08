@@ -4,14 +4,16 @@ using Diary.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Diary.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210607222100_HomeworkResult")]
+    partial class HomeworkResult
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,9 +154,6 @@ namespace Diary.Web.Data.Migrations
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
-
                     b.Property<string>("TaskText")
                         .HasColumnType("nvarchar(max)");
 
@@ -167,8 +166,6 @@ namespace Diary.Web.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClassId");
-
-                    b.HasIndex("SubjectId");
 
                     b.HasIndex("TeacherId");
 
@@ -188,7 +185,7 @@ namespace Diary.Web.Data.Migrations
                     b.Property<int>("Grade")
                         .HasColumnType("int");
 
-                    b.Property<int>("HomeworkId")
+                    b.Property<int>("HomeworkID")
                         .HasColumnType("int");
 
                     b.Property<int>("StudentId")
@@ -205,7 +202,7 @@ namespace Diary.Web.Data.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.HasIndex("HomeworkId");
+                    b.HasIndex("HomeworkID");
 
                     b.HasIndex("StudentId");
 
@@ -481,12 +478,6 @@ namespace Diary.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Diary.Web.Data.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Diary.Web.Data.Teacher", "Teacher")
                         .WithMany()
                         .HasForeignKey("TeacherId")
@@ -494,8 +485,6 @@ namespace Diary.Web.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Class");
-
-                    b.Navigation("Subject");
 
                     b.Navigation("Teacher");
                 });
@@ -510,7 +499,7 @@ namespace Diary.Web.Data.Migrations
 
                     b.HasOne("Diary.Web.Data.Homework", "Homework")
                         .WithMany("HomeworkResults")
-                        .HasForeignKey("HomeworkId")
+                        .HasForeignKey("HomeworkID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

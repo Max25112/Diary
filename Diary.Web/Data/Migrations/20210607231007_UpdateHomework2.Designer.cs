@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diary.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210607131953_updateHomeworkResult")]
-    partial class updateHomeworkResult
+    [Migration("20210607231007_UpdateHomework2")]
+    partial class UpdateHomework2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -108,9 +108,6 @@ namespace Diary.Web.Data.Migrations
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int?>("HomeResultId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("HomeworkId")
                         .HasColumnType("int");
 
@@ -121,8 +118,6 @@ namespace Diary.Web.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HomeResultId");
 
                     b.HasIndex("HomeworkId");
 
@@ -146,27 +141,6 @@ namespace Diary.Web.Data.Migrations
                     b.ToTable("Classes");
                 });
 
-            modelBuilder.Entity("Diary.Web.Data.HomeResult", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HomeResults");
-                });
-
             modelBuilder.Entity("Diary.Web.Data.Homework", b =>
                 {
                     b.Property<int>("Id")
@@ -179,6 +153,9 @@ namespace Diary.Web.Data.Migrations
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
 
                     b.Property<string>("TaskText")
                         .HasColumnType("nvarchar(max)");
@@ -193,6 +170,8 @@ namespace Diary.Web.Data.Migrations
 
                     b.HasIndex("ClassId");
 
+                    b.HasIndex("SubjectId");
+
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Homeworks");
@@ -205,10 +184,13 @@ namespace Diary.Web.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Grade")
                         .HasColumnType("int");
 
-                    b.Property<int>("HomeworkID")
+                    b.Property<int>("HomeworkId")
                         .HasColumnType("int");
 
                     b.Property<int>("StudentId")
@@ -223,7 +205,9 @@ namespace Diary.Web.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HomeworkID");
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("HomeworkId");
 
                     b.HasIndex("StudentId");
 
@@ -482,10 +466,6 @@ namespace Diary.Web.Data.Migrations
 
             modelBuilder.Entity("Diary.Web.Data.Attachment", b =>
                 {
-                    b.HasOne("Diary.Web.Data.HomeResult", null)
-                        .WithMany("Attachments")
-                        .HasForeignKey("HomeResultId");
-
                     b.HasOne("Diary.Web.Data.Homework", null)
                         .WithMany("Attachments")
                         .HasForeignKey("HomeworkId");
@@ -503,6 +483,12 @@ namespace Diary.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Diary.Web.Data.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Diary.Web.Data.Teacher", "Teacher")
                         .WithMany()
                         .HasForeignKey("TeacherId")
@@ -511,14 +497,22 @@ namespace Diary.Web.Data.Migrations
 
                     b.Navigation("Class");
 
+                    b.Navigation("Subject");
+
                     b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Diary.Web.Data.HomeworkResult", b =>
                 {
+                    b.HasOne("Diary.Web.Data.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Diary.Web.Data.Homework", "Homework")
                         .WithMany("HomeworkResults")
-                        .HasForeignKey("HomeworkID")
+                        .HasForeignKey("HomeworkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -533,6 +527,8 @@ namespace Diary.Web.Data.Migrations
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Class");
 
                     b.Navigation("Homework");
 
@@ -670,11 +666,6 @@ namespace Diary.Web.Data.Migrations
             modelBuilder.Entity("Diary.Web.Data.Class", b =>
                 {
                     b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("Diary.Web.Data.HomeResult", b =>
-                {
-                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("Diary.Web.Data.Homework", b =>
