@@ -32,6 +32,18 @@ namespace Diary.Web.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            /*builder.Entity<Teacher>()
+               .HasMany(c => c.Subjects)
+               .WithMany(p => p.Teachers)
+               .Map(m =>
+               {
+                   // Ссылка на промежуточную таблицу
+                   m.ToTable("SubjectTeacher");
+
+                   // Настройка внешних ключей промежуточной таблицы
+                   m.MapLeftKey("TeacherId");
+                   m.MapRightKey("SubjectId");
+               });*/
         }
     }
 
@@ -79,14 +91,20 @@ namespace Diary.Web.Data
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string FileType { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string Extension { get; set; }
         public byte[] Data { get; set; }
+        public int HomeworkId { get; set; }
+        public Homework Homework { get; set; }
+        public int HomeworkResultId { get; set; }
+        public HomeworkResult HomeworkResult { get; set; }
     }
 
     public class HomeworkResult
     {
         public int Id { get; set; }
-        [Required()]
-        public string Title { get; set; }
+        public string Response { get; set; }//Возможно нужно убрать 
         public int Grade { get; set; }
         [Required()]
         public int TeacherId { get; set; }
@@ -102,6 +120,6 @@ namespace Diary.Web.Data
         [Required()]
         public int HomeworkId { get; set; }
         public Homework Homework { get; set; }
-        public List<Attachment> Attachments { get; set; } = new ();
+        public List<Attachment> Attachments { get; set; } = new();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,6 +13,9 @@ namespace Diary.Web.ViewModels
         [Display(Name = "Класс")]
         public int ClassId { get; set; }
         [Required()]
+        [Display(Name = "Предмет")]
+        public int SubjectId { get; set; }
+        [Required()]
         [Display(Name = "Название")]
         public string Title { get; set; }
         [Required()]
@@ -23,5 +27,10 @@ namespace Diary.Web.ViewModels
         [Required()]
         [Display(Name = "Время")]
         public DateTime Time { get; set; }
+        [Display(Name = "Deadline")]
+        public DateTime Deadline { get; set; }
+        [Display(Name = "Файл")]
+        public IFormFile Files { get; set; }
+        public int HomeworkId { get; set; }
     }
 }

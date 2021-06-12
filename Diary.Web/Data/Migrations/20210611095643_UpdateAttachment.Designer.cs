@@ -4,14 +4,16 @@ using Diary.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Diary.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210611095643_UpdateAttachment")]
+    partial class UpdateAttachment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,7 +120,10 @@ namespace Diary.Web.Data.Migrations
                     b.Property<int>("HomeworkId")
                         .HasColumnType("int");
 
-                    b.Property<int>("HomeworkResultId")
+                    b.Property<int?>("HomeworkResultId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HomeworkResulttId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -200,9 +205,6 @@ namespace Diary.Web.Data.Migrations
                     b.Property<int>("HomeworkId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Response")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
@@ -211,6 +213,10 @@ namespace Diary.Web.Data.Migrations
 
                     b.Property<int>("TeacherId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -485,9 +491,7 @@ namespace Diary.Web.Data.Migrations
 
                     b.HasOne("Diary.Web.Data.HomeworkResult", "HomeworkResult")
                         .WithMany("Attachments")
-                        .HasForeignKey("HomeworkResultId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HomeworkResultId");
 
                     b.Navigation("Homework");
 

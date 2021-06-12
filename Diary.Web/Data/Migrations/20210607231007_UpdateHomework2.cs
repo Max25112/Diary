@@ -7,13 +7,6 @@ namespace Diary.Web.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
 
-            migrationBuilder.AddColumn<int>(
-                name: "SubjectId",
-                table: "Homeworks",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
             migrationBuilder.CreateIndex(
                 name: "IX_Homeworks_SubjectId",
                 table: "Homeworks",

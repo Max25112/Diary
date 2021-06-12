@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Diary.Web.Controllers
 {
@@ -60,8 +61,21 @@ namespace Diary.Web.Controllers
         [HttpGet]
         public IActionResult AddHomework()
         {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             SelectList classes = new(_db.Classes, "Id", "Name");
             ViewBag.Classes = classes;
+
+            var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == tId).Select(u => new {
+                usub = u.Subjects
+            }).ToList();
+            var sub = new List<Sub>();
+            for (int i = 0; i < teacherSubject.Count + 1; i++)
+            {
+                sub.Add(new Sub(teacherSubject[0].usub[i].Id, teacherSubject[0].usub[i].Name));
+            }
+            SelectList subjects = new(sub, "Id", "Name");
+            ViewBag.Subjects = subjects;
             return View();
         }
         [HttpPost]
@@ -70,7 +84,7 @@ namespace Diary.Web.Controllers
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             var time = model.Date.Add(model.Time.TimeOfDay);
-            var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, Deadline = time, Title = model.Title };
+            var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, Deadline = time, Title = model.Title, SubjectId=model.SubjectId };
             _db.Homeworks.Add(homework);
             _db.SaveChanges();
             return RedirectToAction("AddHomework", "Teacher");
@@ -88,6 +102,50 @@ namespace Diary.Web.Controllers
                 Deadline = x.Deadline,
             }).ToList());
             return View(homeworks);
+        }
+        [HttpGet]
+        public IActionResult ViewResponse()
+        {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
+            var responses = _db.HomeworkResults.Where(x => x.TeacherId == tId).Select(x => new ViewResponse
+            {
+                Id = x.Id,
+                SubjecName = x.Subject.Name,
+                Deadline = x.Homework.Deadline,
+                Attachments = x.Attachments,
+                Response=x.Response,
+                Title = x.Homework.Title,
+                ClassName = x.Class.Name,
+                StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0]+"."
+            });
+            ViewBag.Disabled = "disabled";
+            return View(responses);
+        }
+        [HttpPost]
+        public void ViewResponse(List<ViewResponse> viewResponses, List<IdGrade> IdGrade)
+        {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
+            var responses = _db.HomeworkResults.Where(x => x.TeacherId == tId).Select(x => new ViewResponse
+            {
+                Id = x.Id,
+                SubjecName = x.Subject.Name,
+                Deadline = x.Homework.Deadline,
+                Attachments = x.Attachments,
+                Response = x.Response,
+                Title = x.Homework.Title,
+                ClassName = x.Class.Name,
+                StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
+            });
+            return;
+        }
+        public IActionResult DownloadFile(int id)
+        {
+            var file = _db.Attachments.Where(x => x.Id == id).Single();
+            if (file == null) return null;
+            var FileType = file.FileType;
+            return File(file.Data, file.FileType, file.Name + file.Extension);
         }
     }
 }

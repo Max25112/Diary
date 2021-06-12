@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Diary.Web.ViewModels.ViewResponse>
+@{
+    ViewData["Title"] = "ViewResponse";
+}
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Название</th>
+                <th>Предмет</th>
+                <th>Оценка</th>
+                <th>Скачать</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <th>@item.Id</th>
+                    <th>@item.Title</th>
+                    <th>@item.SubjecName</th>
+                    <th>@item.Grade</th>
+                    <td>
+                        @foreach (var doc in item.Attachments)
+                        {
+                            var Name = doc.Name + doc.Extension;
+                            <a type="button" class="btn btn-primary" asp-controller="Student" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

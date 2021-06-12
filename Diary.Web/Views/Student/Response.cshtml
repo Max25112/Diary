@@ -1,10 +1,29 @@
-﻿@model Diary.Web.Data.Homework
+﻿@model Diary.Web.ViewModels.HomeworkViewModel
 @{
     ViewData["Title"] = "Response";
+
 }
 <div>
-    <p>Название: @Html.DisplayFor(modelItem => Model.Title)</p>
-    <p>Предмет:@ViewData["SubjectName"]</p>
-    <p>Задание:@Html.DisplayFor(modelItem => Model.TaskText)</p>
-    <p style="color:red">@Html.DisplayFor(modelItem => Model.Deadline)</p>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <div class="col-md-10">
+                <p>Название: @Html.DisplayFor(modelItem => Model.Title)</p>
+                <p>Предмет:@ViewData["SubjectName"]</p>
+                <p>Задание:@Html.DisplayFor(modelItem => Model.TaskText)</p>
+                <p style="color:red">@Html.DisplayFor(modelItem => Model.Deadline)</p>
+                <p>HomeworkId: @Html.DisplayFor(modelItem => Model.HomeworkId, "HomeworkId")</p>
+                <div width="200">
+                    <input asp-for="HomeworkId" class="form-control" type="file" name="Files" id="Files" size="5242880" accept=".xls,.xlsx,.csv,.CSV,.png,.jpeg,.jpg,.gif,.doc,.docx,.pdf,.PDF,.txt"  multiple required />
+                </div>
+                <textarea name="Response" id="Response" rows="5" cols="90"></textarea>
+                <!-- /!-->
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-10">
+                <input class="btn btn-success" type="submit" value="Upload" />
+            </div>
+        </div>
+    </form>
 </div>

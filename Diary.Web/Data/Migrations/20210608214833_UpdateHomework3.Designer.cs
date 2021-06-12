@@ -4,14 +4,16 @@ using Diary.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Diary.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210608214833_UpdateHomework3")]
+    partial class UpdateHomework3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,22 +105,13 @@ namespace Diary.Web.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("Extension")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("HomeworkId")
+                    b.Property<int?>("HomeworkId")
                         .HasColumnType("int");
 
-                    b.Property<int>("HomeworkResultId")
+                    b.Property<int?>("HomeworkResultId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -194,14 +187,14 @@ namespace Diary.Web.Data.Migrations
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<int>("Grade")
                         .HasColumnType("int");
 
                     b.Property<int>("HomeworkId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Response")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
@@ -211,6 +204,10 @@ namespace Diary.Web.Data.Migrations
 
                     b.Property<int>("TeacherId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -477,21 +474,13 @@ namespace Diary.Web.Data.Migrations
 
             modelBuilder.Entity("Diary.Web.Data.Attachment", b =>
                 {
-                    b.HasOne("Diary.Web.Data.Homework", "Homework")
+                    b.HasOne("Diary.Web.Data.Homework", null)
                         .WithMany("Attachments")
-                        .HasForeignKey("HomeworkId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HomeworkId");
 
-                    b.HasOne("Diary.Web.Data.HomeworkResult", "HomeworkResult")
+                    b.HasOne("Diary.Web.Data.HomeworkResult", null)
                         .WithMany("Attachments")
-                        .HasForeignKey("HomeworkResultId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Homework");
-
-                    b.Navigation("HomeworkResult");
+                        .HasForeignKey("HomeworkResultId");
                 });
 
             modelBuilder.Entity("Diary.Web.Data.Homework", b =>
