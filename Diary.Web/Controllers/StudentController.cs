@@ -65,7 +65,7 @@ namespace Diary.Web.Controllers
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());
-            var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId)/*.Where(x=>x.Deadline>DateTime.Now)*/.Select(x => new ViewHomework
+            var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId).Where(x=>x.Deadline>DateTime.Now).Select(x => new ViewHomework
             {
                 Id = x.Id,
                 Title = x.Title,

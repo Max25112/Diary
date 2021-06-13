@@ -65,7 +65,6 @@ namespace Diary.Web.Controllers
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             SelectList classes = new(_db.Classes, "Id", "Name");
             ViewBag.Classes = classes;
-
             var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == tId).Select(u => new
             {
                 usub = u.Subjects
@@ -88,7 +87,7 @@ namespace Diary.Web.Controllers
             var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, Deadline = time, Title = model.Title, SubjectId = model.SubjectId };
             _db.Homeworks.Add(homework);
             _db.SaveChanges();
-            return RedirectToAction("AddHomework", "Teacher");
+            return RedirectToAction("Index", "Home");
         }
         [HttpGet]
         public IActionResult ViewHomework()
@@ -158,6 +157,7 @@ namespace Diary.Web.Controllers
             }).Single();
             return View(responses);
         }
+
         [HttpPost]
         public IActionResult UpdateResponse(int Id, int Grade)
         {

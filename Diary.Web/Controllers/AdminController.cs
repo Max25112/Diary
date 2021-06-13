@@ -98,6 +98,8 @@ namespace Diary.Web.Controllers
                     _db.SaveChanges();
                 }
             }
+            ViewBag.Subjects = null;
+            ViewBag.Classes = null;
             return RedirectToAction("Index", "Home");
         }
         [HttpGet]
@@ -198,7 +200,6 @@ namespace Diary.Web.Controllers
             List<int> IdHomework = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).OrderBy(x => x.Id).Select(x => x.Id).ToList();
             List<string> NameStudent = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
                 .Select(x => x.User.LastName + " " + x.User.FirstName[0] + "." + x.User.MiddleName[0] + ".").ToList();
-            
             var response = _db.HomeworkResults.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
                 .Where(x => x.TeacherId == Convert.ToInt32(teacherClass.TeacherId)).Select(x => new Grades
                 {
