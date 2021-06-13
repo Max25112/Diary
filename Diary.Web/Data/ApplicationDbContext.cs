@@ -32,18 +32,6 @@ namespace Diary.Web.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            /*builder.Entity<Teacher>()
-               .HasMany(c => c.Subjects)
-               .WithMany(p => p.Teachers)
-               .Map(m =>
-               {
-                   // Ссылка на промежуточную таблицу
-                   m.ToTable("SubjectTeacher");
-
-                   // Настройка внешних ключей промежуточной таблицы
-                   m.MapLeftKey("TeacherId");
-                   m.MapRightKey("SubjectId");
-               });*/
         }
     }
 

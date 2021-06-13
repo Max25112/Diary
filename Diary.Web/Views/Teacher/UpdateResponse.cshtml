@@ -1,0 +1,35 @@
+﻿@model Diary.Web.ViewModels.ViewResponse
+@{
+    ViewData["Title"] = "UpdateResponse";
+    
+
+}
+<div>
+    <form method="post" enctype="multipart/form-data">
+        <a href="#" class="btn btn-primary" onclick="return ChangeGrade(this);">Изменить оценку</a>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <p>#@Model.Id</p>
+        <p>Дз: @Model.Title</p>
+        <p>Предмет: @Model.SubjecName</p>
+        <p>Класс: @Model.ClassName</p>
+        <p>Ученик @Model.StudentName</p>
+        <input value="@Model.Grade" size="1" disabled="disabled" name="Grade" id="Grade" /><br />
+        <p>@Model.Response</p>
+        <div>
+            @foreach (var doc in Model.Attachments)
+            {
+                var Name = doc.Name + doc.Extension;
+                <a type="button" class="btn btn-success" asp-controller="Teacher" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
+            }
+        </div>
+        <!--<input type="submit" name="buttonSubmit" value="Сохранить изменения" /-->
+    </form>
+</div>
+@section Scripts {
+    <script>
+        function ChangeGrade(Element) {
+            console.log('change');
+            $("input").removeAttr('disabled');
+        }
+    </script>
+}

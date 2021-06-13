@@ -4,8 +4,6 @@
 }
 <div>   
     <form method="post">
-        <a href="#" class="btn btn-primary" onclick="return ChangeGrade(this);">Изменить оценку</a>
-        <button type="submit" class="btn btn-primary">Сохранить</button>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -14,8 +12,7 @@
                     <th>Название</th>
                     <th>Предмет</th>
                     <th>Оценка</th>
-                    <th>Ответ</th>
-                    <th>Скачать</th>
+                    <th>Ответы</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,25 +24,10 @@
                         <th>@item.Title</th>
                         <th>@item.SubjecName</th>
                         <th><input value="@item.Grade" size="1" disabled="disabled" name="input" id="input" /></th>
-                        <th>@item.Response</th>
-                        <th>
-                            @foreach (var doc in item.Attachments)
-                            {
-                                var Name = doc.Name + doc.Extension;
-                                <a type="button" class="btn btn-primary" asp-controller="Teacher" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
-                            }
-                        </th>
+                        <th>@Html.ActionLink("Посмотреть", "UpdateResponse", new { id = item.Id }, null)</th>
                     </tr>
                 }
             </tbody>
         </table>
     </form>
 </div>
-@section Scripts {
-    <script>
-        function ChangeGrade(Element) {
-            console.log('change');
-            $("input").removeAttr('disabled');
-        }
-    </script>
-}

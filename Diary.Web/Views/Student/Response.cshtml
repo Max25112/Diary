@@ -14,7 +14,7 @@
                 <p style="color:red">@Html.DisplayFor(modelItem => Model.Deadline)</p>
                 <p>HomeworkId: @Html.DisplayFor(modelItem => Model.HomeworkId, "HomeworkId")</p>
                 <div width="200">
-                    <input asp-for="HomeworkId" class="form-control" type="file" name="Files" id="Files" size="5242880" accept=".xls,.xlsx,.csv,.CSV,.png,.jpeg,.jpg,.gif,.doc,.docx,.pdf,.PDF,.txt"  multiple required />
+                    <input asp-for="HomeworkId" class="form-control" type="file" name="Files" id="Files" size="5242880" accept=".xls,.xlsx,.csv,.CSV,.png,.jpeg,.jpg,.gif,.doc,.docx,.pdf,.PDF,.txt"  multiple/>
                 </div>
                 <textarea name="Response" id="Response" rows="5" cols="90"></textarea>
                 <!-- /!-->

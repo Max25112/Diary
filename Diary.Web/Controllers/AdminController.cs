@@ -59,7 +59,7 @@ namespace Diary.Web.Controllers
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, MiddleName = model.MiddleName };// добавляем пользователя// , Student = student, Teacher=teacher
                 var result = await _userManager.CreateAsync(user, model.Password);
-                var userId =  _db.Users.Where(x => x.Email == user.Email).Select(x => x.Id).Single().ToString();
+                var userId = _db.Users.Where(x => x.Email == user.Email).Select(x => x.Id).Single().ToString();
                 var userRole = await _userManager.FindByIdAsync(userId);
                 if (cases == "Teacher")
                 {
@@ -69,7 +69,7 @@ namespace Diary.Web.Controllers
                     List<Subject> Subs = new List<Subject>();
                     foreach (var a in model.SubjectIds)
                     {
-                        string b = (from t in _db.Subjects 
+                        string b = (from t in _db.Subjects
                                     where t.Id == a
                                     select t.Name).Single().ToString();
                         Subs.Add(new Subject { Id = a, Name = b });
@@ -127,7 +127,8 @@ namespace Diary.Web.Controllers
         [HttpGet]
         public IActionResult AddLesson()
         {
-            var teacherSubject = _db.Teachers.Include("Subjects").Select(u => new {
+            var teacherSubject = _db.Teachers.Include("Subjects").Select(u => new
+            {
                 Id = u.Id,
                 usub = u.Subjects,
             }).ToList();
@@ -138,29 +139,30 @@ namespace Diary.Web.Controllers
                             join u in _db.Users on t.UserId equals u.Id
                             select new
                             {
-                                FIO = u.LastName + " " + u.FirstName + " " + u.MiddleName ,
+                                FIO = u.LastName + " " + u.FirstName + " " + u.MiddleName,
                                 Id = t.Id
                             };
             SelectList teachers = new SelectList(teaherFIO, "Id", "FIO");
             ViewBag.Teachers = teachers;
             SelectList subjects = new SelectList(_db.Subjects, "Id", "Name");
             ViewBag.Subjects = subjects;
-            
+
             return View();
         }
         [HttpPost]
         public IActionResult AddLesson(LessonModel model)
         {
-            var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order, SubjectId=model.SubjectId};   
+            var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order, SubjectId = model.SubjectId };
             _db.Lessons.Add(lesson);
             _db.SaveChanges();
             return View();
         }
-        [HttpPost] 
+        [HttpPost]
         public JsonResult SelectSub([FromBody] string TeacherId)
         {
             int value = Convert.ToInt32(TeacherId);
-            var teacherSubject = _db.Teachers.Include("Subjects").Where(u=>u.Id == value).Select(u => new {
+            var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == value).Select(u => new
+            {
                 usub = u.Subjects
             }).ToList();
 
@@ -169,8 +171,51 @@ namespace Diary.Web.Controllers
             {
                 sub.Add(new Sub(teacherSubject[0].usub[i].Id, teacherSubject[0].usub[i].Name));
             }
-            var data = JsonConvert.SerializeObject(sub);
             return Json(sub);
+        }
+        [HttpGet]
+        public IActionResult AllGrades()
+        {
+            var teaherFIO = from t in _db.Teachers
+                            join u in _db.Users on t.UserId equals u.Id
+                            select new
+                            {
+                                FIO = u.LastName + " " + u.FirstName + " " + u.MiddleName,
+                                Id = t.Id
+                            };
+            SelectList teachers = new SelectList(teaherFIO, "Id", "FIO");
+            ViewBag.Teachers = teachers;
+            SelectList classes = new SelectList(_db.Classes, "Id", "Name");
+            ViewBag.Classes = classes;
+            return View();
+        }
+        [HttpPost]
+        public JsonResult SelectResponse([FromBody] TeacherClass teacherClass)
+        {
+            int StudentLenght = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).Count();
+            int HomeworkLength = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).Count();
+
+            List<int> IdHomework = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).OrderBy(x => x.Id).Select(x => x.Id).ToList();
+            List<string> NameStudent = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
+                .Select(x => x.User.LastName + " " + x.User.FirstName[0] + "." + x.User.MiddleName[0] + ".").ToList();
+            
+            var response = _db.HomeworkResults.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
+                .Where(x => x.TeacherId == Convert.ToInt32(teacherClass.TeacherId)).Select(x => new Grades
+                {
+                    HomeworkId = x.HomeworkId,
+                    StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + ".",
+                    Title = x.Homework.Title,
+                    Grade = x.Grade
+                }).ToList();
+            JsonGrade grades = new JsonGrade
+            {
+                StudentLenght=StudentLenght,
+                HomeworkLength=HomeworkLength,
+                NameStudent= NameStudent,
+                IdHomework = IdHomework,
+                Grades = response
+            };
+            return Json(grades);
         }
     }
     public struct Sub
@@ -182,5 +227,26 @@ namespace Diary.Web.Controllers
         }
         public int Id { get; private set; }
         public string Name { get; private set; }
+    }
+    public class TeacherClass
+    {
+        public string ClassId { get; set; }
+        public string TeacherId { get; set; }
+    }
+    public class Grades
+    {
+        public int HomeworkId { get; set; }
+        public int Grade { get; set; }
+        public string StudentName { get; set; }
+        public string Title { get; set; }
+
+    }
+    public class JsonGrade
+    {
+        public int StudentLenght { get; set; }
+        public int HomeworkLength { get; set; }
+        public List<string> NameStudent { get; set; } = new();
+        public List<int> IdHomework { get; set; } = new();
+        public List<Grades> Grades { get; set; } = new();
     }
 }

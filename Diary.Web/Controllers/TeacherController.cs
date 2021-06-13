@@ -46,7 +46,7 @@ namespace Diary.Web.Controllers
             for (int i = 1; i <= 6; i++)
             {
                 DictLessons.Add(i,
-                    _db.Lessons.Where(x => x.Day == i).Where(x=>x.Teacher.UserId==uId).Select(x => new TableLessons
+                    _db.Lessons.Where(x => x.Day == i).Where(x => x.Teacher.UserId == uId).Select(x => new TableLessons
                     {
                         Id = x.Id,
                         FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
@@ -66,7 +66,8 @@ namespace Diary.Web.Controllers
             SelectList classes = new(_db.Classes, "Id", "Name");
             ViewBag.Classes = classes;
 
-            var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == tId).Select(u => new {
+            var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == tId).Select(u => new
+            {
                 usub = u.Subjects
             }).ToList();
             var sub = new List<Sub>();
@@ -84,7 +85,7 @@ namespace Diary.Web.Controllers
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             var time = model.Date.Add(model.Time.TimeOfDay);
-            var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, Deadline = time, Title = model.Title, SubjectId=model.SubjectId };
+            var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, Deadline = time, Title = model.Title, SubjectId = model.SubjectId };
             _db.Homeworks.Add(homework);
             _db.SaveChanges();
             return RedirectToAction("AddHomework", "Teacher");
@@ -114,10 +115,11 @@ namespace Diary.Web.Controllers
                 SubjecName = x.Subject.Name,
                 Deadline = x.Homework.Deadline,
                 Attachments = x.Attachments,
-                Response=x.Response,
+                Grade=x.Grade,
+                Response = x.Response,
                 Title = x.Homework.Title,
                 ClassName = x.Class.Name,
-                StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0]+"."
+                StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
             });
             ViewBag.Disabled = "disabled";
             return View(responses);
@@ -140,12 +142,41 @@ namespace Diary.Web.Controllers
             });
             return;
         }
+        [HttpGet]
+        public IActionResult UpdateResponse(int id)
+        {
+            var responses = _db.HomeworkResults.Where(x => x.Id == id).Select(x => new ViewResponse
+            {
+                Title = x.Homework.Title,
+                Id = x.Id,
+                SubjecName = x.Subject.Name,
+                Grade = x.Grade,
+                Attachments=x.Attachments,
+                Response=x.Response,
+                ClassName=x.Class.Name,
+                StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
+            }).Single();
+            return View(responses);
+        }
+        [HttpPost]
+        public IActionResult UpdateResponse(int Id, int Grade)
+        {
+            var response=_db.HomeworkResults.Where(x => x.Id == Id).FirstOrDefault();
+            response.Grade = Grade;
+            _db.SaveChanges();
+            return RedirectToAction("ViewResponse");
+        }
         public IActionResult DownloadFile(int id)
         {
             var file = _db.Attachments.Where(x => x.Id == id).Single();
             if (file == null) return null;
             var FileType = file.FileType;
             return File(file.Data, file.FileType, file.Name + file.Extension);
+        }
+        [HttpGet]
+        public IActionResult ViewGrade()
+        {
+            return View();
         }
     }
 }

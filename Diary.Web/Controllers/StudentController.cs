@@ -137,7 +137,7 @@ namespace Diary.Web.Controllers
                 }
             }
             _db.SaveChanges();
-            return View();
+            return RedirectToAction("Index", "Home");
         }
         [HttpGet]
         public IActionResult ViewResponse()
