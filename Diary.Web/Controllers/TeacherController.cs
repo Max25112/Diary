@@ -33,30 +33,21 @@ namespace Diary.Web.Controllers
         public IActionResult ViewLesson()
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Dictionary<int, List<TableLessons>> DictLessons = new Dictionary<int, List<TableLessons>>(6);
-            var ListLessons = _db.Lessons.Select(x => new TableLessons
+            string[,] Shedule = new string[6, 7];
+            for (int i = 0; i <= 5; i++)
             {
-                Id = x.Id,
-                FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
-                ClassName = x.Class.Name,
-                SubjectName = x.Subject.Name,
-                Cabinet = x.Cabinet,
-                Order = x.Order
-            }).ToList();
-            for (int i = 1; i <= 6; i++)
-            {
-                DictLessons.Add(i,
-                    _db.Lessons.Where(x => x.Day == i).Where(x => x.Teacher.UserId == uId).Select(x => new TableLessons
-                    {
-                        Id = x.Id,
-                        FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
-                        ClassName = x.Class.Name,
-                        SubjectName = x.Subject.Name,
-                        Cabinet = x.Cabinet,
-                        Order = x.Order
-                    }).OrderBy(i => i.Order).ToList());
+                for (int j = 0; j <= 6; j++)
+                {
+                    if (!_db.Lessons.Any(x => x.Day == i + 1 && x.Order == j + 1 && x.Teacher.UserId == uId))
+                        continue;
+                    Shedule[i, j] = _db.Lessons
+                        .Where(x => x.Day == i + 1)
+                        .Where(x => x.Teacher.UserId == uId)
+                        .Where(x => x.Order == j + 1)
+                        .Select(x =>  x.Class.Name + "\n" + x.Subject.Name + "\nКб." + x.Cabinet ).Single().ToString();             
+                }
             }
-            return View(DictLessons);
+            return View(Shedule);
         }
         [HttpGet]
         public IActionResult AddHomework()
@@ -114,7 +105,7 @@ namespace Diary.Web.Controllers
                 SubjecName = x.Subject.Name,
                 Deadline = x.Homework.Deadline,
                 Attachments = x.Attachments,
-                Grade=x.Grade,
+                Grade = x.Grade,
                 Response = x.Response,
                 Title = x.Homework.Title,
                 ClassName = x.Class.Name,
@@ -150,9 +141,9 @@ namespace Diary.Web.Controllers
                 Id = x.Id,
                 SubjecName = x.Subject.Name,
                 Grade = x.Grade,
-                Attachments=x.Attachments,
-                Response=x.Response,
-                ClassName=x.Class.Name,
+                Attachments = x.Attachments,
+                Response = x.Response,
+                ClassName = x.Class.Name,
                 StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
             }).Single();
             return View(responses);
@@ -161,7 +152,7 @@ namespace Diary.Web.Controllers
         [HttpPost]
         public IActionResult UpdateResponse(int Id, int Grade)
         {
-            var response=_db.HomeworkResults.Where(x => x.Id == Id).FirstOrDefault();
+            var response = _db.HomeworkResults.Where(x => x.Id == Id).FirstOrDefault();
             response.Grade = Grade;
             _db.SaveChanges();
             return RedirectToAction("ViewResponse");

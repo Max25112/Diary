@@ -58,14 +58,29 @@ namespace Diary.Web.Controllers
                         Order = x.Order
                     }).OrderBy(i => i.Order).ToList());
             }
-            return View(DictLessons);
+            string[,] Shedule = new string[6, 7];
+            for (int i = 0; i <= 5; i++)
+            {
+                for (int j = 0; j <= 6; j++)
+                {
+                    if (!_db.Lessons.Any(x => x.Day == i + 1 && x.Order == j + 1 && x.ClassId == classId))
+                        continue;
+                    Shedule[i, j] = _db.Lessons
+                        .Where(x => x.Day == i + 1)
+                        .Where(x => x.ClassId == classId)
+                        .Where(x => x.Order == j + 1)
+                        .Select(x => x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0] +
+                        "\n" + x.Subject.Name + "\nКб." + x.Cabinet).Single().ToString();
+                }
+            }
+            return View(Shedule);
         }
         [HttpGet]
         public IActionResult ViewHomework()
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());
-            var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId).Where(x=>x.Deadline>DateTime.Now).Select(x => new ViewHomework
+            var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId).Where(x => x.Deadline > DateTime.Now).Select(x => new ViewHomework
             {
                 Id = x.Id,
                 Title = x.Title,
@@ -150,7 +165,7 @@ namespace Diary.Web.Controllers
                 SubjecName = x.Subject.Name,
                 Deadline = x.Homework.Deadline,
                 Attachments = x.Attachments,
-                Title=x.Homework.Title
+                Title = x.Homework.Title
             });
             return View(responses);
         }

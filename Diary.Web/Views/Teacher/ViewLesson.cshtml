@@ -1,12 +1,15 @@
-﻿@model Dictionary<int, List<Diary.Web.ViewModels.TableLessons>>
+﻿@model string[,]
+
 @{
     ViewData["Title"] = "Lessons";
+    int n = 1;
 }
 <div class="row">
     <div class="col-md-4">
         <table class="table table-striped" border="1">
             <thead>
                 <tr>
+                    <td>№</td>
                     <td>Понедельник</td>
                     <td>Вторник</td>
                     <td>Среда</td>
@@ -16,22 +19,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    @for (int i = 0; i <= 5; i++)
-                    {
-                        @for (int j = 0; j <= 6; j++)
+
+                @for (int j = 0; j <= 6; j++)
+                {
+                    <tr>
+                        <td><p>@n</p></td>
+                        @for (int i = 0; i <= 5; i++)
                         {
-                            <td>
-                                @if (Model[i][j].Order != 0)
-                                {
-                                    @Html.DisplayFor(modelItem => Model[i][j].ClassName)<br />
-                                    @Html.DisplayFor(modelItem => Model[i][j].SubjectName)<br />
-                                    <p>Кб. @Html.DisplayFor(modelItem => Model[i][j].Cabinet)</p>
-                                }
-                            </td>
+                            <td>@Model[i, j]</td>
                         }
-                    }
-                </tr>
+                        @{n++;}
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
