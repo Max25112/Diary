@@ -22,9 +22,7 @@
         </tr>
     </table>
     <a href="javascript:ViewGrade()" class="btn btn-primary">Показать</a><br />
-    <!--<a href="#" onclick="return ViewGrade();" class="btn btn-primary">Показать</a><br />-->
 </div>
-
 @section Scripts {
     <script>
         function ViewGrade() {
@@ -32,6 +30,8 @@
             var m = document.getElementById("ClassId").options.selectedIndex;
             var TeacherId = document.getElementById("TeacherId").options[n].value;
             var ClassId = document.getElementById("ClassId").options[m].value;
+            if (document.getElementById('table'))
+                table.parentNode.removeChild(table);
             /*  console.log("TeacherId: ", TeacherId);
                 console.log("ClassId: ", ClassId);
                 console.log('Lenght:', sub.length);
@@ -49,13 +49,31 @@
                 }
             }).then(res => res.json())
                 .then(response => {
-                    var items = JSON.stringify(response);
-                    var sub = JSON.parse(items);
-                    console.log('Success:', sub);
+                    /* var items = JSON.stringify(response);
+                     var sub = JSON.parse(items);
+                     console.log('1:', typeof sub);*/
+                    var sub = JSON.parse(response);
+                    /*console.log('Success:', sub);
+                    console.log('size 1:', sub.length);
+                    console.log('size 2:', sub[0].length);*/
+                    var size1 = sub.length;
+                    var size2 = sub[0].length;
                     var newElem = document.createElement('table');
+                    newElem.setAttribute('width', '600px');
+                    newElem.setAttribute('text-align', 'center');
+                    newElem.setAttribute('id', 'table');
+                    newElem.setAttribute('name', 'table');
+                    newElem.setAttribute('class', 'table table-striped');
+                    for (let i = 0; i < size1; i++) {
+                        var newRow = newElem.insertRow(i);
+                        for (let j = 0; j < size2; j++) {
+                            var newCell = newRow.insertCell(j);
+                            newCell.setAttribute('width', '30px')
+                            newCell.innerHTML = sub[i][j];
+                        }
+                    }
                     document.body.appendChild(newElem);
-                    newElem.setAttribute('width', '500');
-
+                    //document.getElementById('_table').innerHTML = newElem;
                 })
                 .catch(error => console.error('Error:', error));
         }

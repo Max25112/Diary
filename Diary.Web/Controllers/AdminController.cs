@@ -196,7 +196,7 @@ namespace Diary.Web.Controllers
         {
             int StudentLenght = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).Count();
             int HomeworkLength = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).Count();
-
+            /*
             List<int> IdHomework = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).OrderBy(x => x.Id).Select(x => x.Id).ToList();
             List<string> NameStudent = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
                 .Select(x => x.User.LastName + " " + x.User.FirstName[0] + "." + x.User.MiddleName[0] + ".").ToList();
@@ -210,13 +210,60 @@ namespace Diary.Web.Controllers
                 }).ToList();
             JsonGrade grades = new JsonGrade
             {
-                StudentLenght=StudentLenght,
-                HomeworkLength=HomeworkLength,
-                NameStudent= NameStudent,
+                StudentLenght = StudentLenght,
+                HomeworkLength = HomeworkLength,
+                NameStudent = NameStudent,
                 IdHomework = IdHomework,
                 Grades = response
             };
-            return Json(grades);
+            */
+
+            var students = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
+                .OrderBy(x => x.User.LastName)
+                .ThenBy(x => x.User.FirstName)
+                .ThenBy(x => x.User.MiddleName)
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    StudentName = x.User.LastName + " " + x.User.FirstName[0] + "." + x.User.MiddleName[0] + "."
+                }).ToList();
+            var titleHw = _db.Homeworks
+                .Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
+                .Where(x => x.TeacherId == Convert.ToInt32(teacherClass.TeacherId))
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    Title = x.Title
+                }).ToList();
+            string[,] Gr = new string[StudentLenght + 1, HomeworkLength + 1];
+            int n = 1;
+            foreach (var item in students)
+            {
+                Gr[n, 0] = item.StudentName;
+                n++;
+            }
+            n = 1;
+            foreach (var item in titleHw)
+            {
+                Gr[0, n] = item.Title;
+                n++;
+            }
+
+            for (int i = 1; i <= StudentLenght; i++)
+            {
+                for (int j = 1; j <= HomeworkLength; j++)
+                {
+                    if (!_db.HomeworkResults.Any(x => x.Homework.Id == titleHw[j - 1].Id
+                    && x.StudentId == students[i - 1].Id))
+                        continue;
+                    Gr[i, j] = _db.HomeworkResults
+                        .Where(x => x.Homework.Id == titleHw[j - 1].Id)
+                        .Where(x => x.StudentId == students[i - 1].Id)
+                        .Select(x => x.Grade).Single().ToString();
+                }
+            }
+            var res= JsonConvert.SerializeObject(Gr);
+            return Json(res);//grades
         }
     }
     public struct Sub

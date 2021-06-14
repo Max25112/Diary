@@ -54,8 +54,6 @@
                     <input asp-for="TeacherPost" class="form-control" /><br />
                     <label asp-for="SubjectIds"></label>
                     <span asp-validation-for="SubjectIds" class="text-danger"></span>
-                    @{//Html.DropDownList("Выберите", ViewBag.Subjects as IEnumerable<SelectListItem>)
-                    }
                     @Html.ListBoxFor(m => m.SubjectIds, ViewBag.Subjects as IEnumerable<SelectListItem>)
                 </div>
                 <div class="Student" id="Student">

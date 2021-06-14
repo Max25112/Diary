@@ -18,6 +18,7 @@ namespace Diary.Web.ViewModels
         [Display(Name = "Отчество")]
         public string MiddleName { get; set; }
         [Required]
+        [StringLength(100, ErrorMessage = " {0} должен иметь не менее {2} и не более {1} количества символов.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
