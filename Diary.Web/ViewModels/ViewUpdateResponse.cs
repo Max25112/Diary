@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Diary.Web.ViewModels
 {
-    public class ViewResponse
+    public class ViewUpdateResponse
     {
         [Required()]
         public int Id { get; set; }
@@ -17,18 +17,15 @@ namespace Diary.Web.ViewModels
         [Required()]
         public int Grade { get; set; }
         [Required()]
-        public int TeacherId { get; set; }
-        public int ClassId { get; set; }
-        public int HomeworkId { get; set; }
-        public int StudentId { get; set; }
-        public int SubjectId { get; set; }
         public DateTime Deadline { get; set; }
-        public string TeacherName { get; set; }
+        public int SubjectId { get; set; }
+        public string TaskText { get; set; }
         public string ClassName { get; set; }
         public string SubjecName { get; set; }
         public string StudentName { get; set; }
         public string Response { get; set; }
         public List<IFormFile> Files { get; set; }
-        public List<Attachment> Attachments { get; set; } = new();
+        public List<Attachment> AttachmentsTeacher { get; set; } = new();
+        public List<Attachment> AttachmentsStudent { get; set; } = new();
     }
 }

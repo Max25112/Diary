@@ -17,9 +17,15 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td
-                        @if(item.StudentId)
-                        >@Html.ActionLink("Ответить", "Response", new { HomeworkId = item.Id }, null)
+                    <td>
+                        @if (item.IsExists)
+                        {
+                            @Html.ActionLink("Изменить", "UpdateResponse", new { HomeworkResultId = item.HomeworkResultId }, null)
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Ответить", "Response", new { HomeworkId = item.Id }, null)
+                        }
                     </td>
                     <td>@Html.DisplayFor(modelItem => item.Title)</td>
                     <td>@Html.DisplayFor(modelItem => item.FIO)</td>

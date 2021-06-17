@@ -19,8 +19,12 @@ namespace Diary.Web.ViewModels
         [Required()]
         [Display(Name = "Название")]
         public string Title { get; set; }
+        [Display(Name = "Класс")]
+        public string ClassName { get; set; }
+        [Display(Name = "Предмет")]
+        public string SubjectName { get; set; }
         [Required()]
-        [Display(Name = "Текст Задания")]
+        [Display(Name = "Текст задания")]
         public string TaskText { get; set; }
         [Required()]
         [Display(Name = "Дата")]
@@ -31,7 +35,10 @@ namespace Diary.Web.ViewModels
         [Display(Name = "Deadline")]
         public DateTime Deadline { get; set; }
         [Display(Name = "Файл")]
-        public IFormFile Files { get; set; }
+        public string DeadlineString { get; set; }
+        public string DateString { get; set; }
+        public string TimeString { get; set; }
+        public List<IFormFile> Files { get; set; }
         public int HomeworkId { get; set; }
         public List<Attachment> Attachments { get; set; } = new();
     }

@@ -1,6 +1,6 @@
-﻿@model Diary.Web.ViewModels.HomeworkViewModel
+﻿@model Diary.Web.ViewModels.ViewUpdateResponse
 @{
-    ViewData["Title"] = "Response";
+    ViewData["Title"] = "UpdateResponse";
 
 }
 <div>
@@ -22,9 +22,9 @@
                         <td>@Html.DisplayFor(modelItem => Model.TaskText)</td>
                     </tr>
                     <tr>
-                        <td>Файлы</td>
+                        <td>Файлы учителя</td>
                         <td>
-                            @foreach (var doc in Model.Attachments)
+                            @foreach (var doc in Model.AttachmentsTeacher)
                             {
                                 var Name = doc.Name + doc.Extension;
                                 <a type="button" class="btn btn-primary" asp-controller="Student" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
@@ -35,10 +35,20 @@
                         <td>Срок: </td>
                         <td><p style="color:red">@Html.DisplayFor(modelItem => Model.Deadline)</p></td>
                     </tr>
+                    <tr>
+                        <td>Файлы студентов</td>
+                        <td>
+                            @foreach (var doc in Model.AttachmentsStudent)
+                            {
+                                var Name = doc.Name + doc.Extension;
+                                <a type="button" class="btn btn-primary" asp-controller="Student" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
+                            }
+                        </td>
+                    </tr>
                 </table>
                 <div class="form-group">
-                    <input asp-for="HomeworkId" class="form-control" type="file" name="Files" id="Files" size="5242880" accept=".xls,.xlsx,.csv,.CSV,.png,.jpeg,.jpg,.gif,.doc,.docx,.pdf,.PDF,.txt"  multiple/>
-                    <textarea name="Response" id="Response" rows="5" cols="90"></textarea>
+                    <input  class="form-control" type="file" name="Files" id="Files" size="5242880" accept=".xls,.xlsx,.csv,.CSV,.png,.jpeg,.jpg,.gif,.doc,.docx,.pdf,.PDF,.txt" multiple />
+                    <textarea value="Model.Response" name="Response" id="Response" rows="5" cols="90"></textarea>
                 </div>
             </div>
         </div>

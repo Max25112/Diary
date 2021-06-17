@@ -417,3 +417,5 @@ D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Teacher\ViewResponse
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Teacher\UpdateResponse.cshtml.g.cs
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Shared\_MyLayout.cshtml.g.cs
 D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Admin\AllGrades.cshtml.g.cs
+D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Student\UpdateResponse.cshtml.g.cs
+D:\Project\VKR\Diary\Diary.Web\obj\Debug\net5.0\Razor\Views\Teacher\UpdateHomework.cshtml.g.cs

@@ -12,6 +12,7 @@
                 <td>Задание</td>
                 <td>Время</td>
                 <td>Файлы</td>
+                <td>Изменить</td>
             </tr>
             @foreach (var item in Model)
             {
@@ -27,6 +28,9 @@
                             var Name = doc.Name + doc.Extension;
                             <a type="button" class="btn btn-primary" asp-controller="Student" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
                         }
+                    </td>
+                    <td>
+                        @Html.ActionLink("Изменить", "UpdateHomework", new { HomeworkId = item.Id }, null)
                     </td>
                 </tr>
             }

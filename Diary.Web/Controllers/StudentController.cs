@@ -86,14 +86,15 @@ namespace Diary.Web.Controllers
                 .Select(x => new ViewHomework
                 {
                     Id = x.Id,
+                    IsExists = _db.HomeworkResults.Any(y => y.HomeworkId == x.Id && y.StudentId == sId) ? true : false,
                     Title = x.Title,
                     FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
                     SubjectName = x.Subject.Name,
-                   /*if(_db.HomeworkResults.Where(x=>x.HomeworkId==Id))
-                    IsExists =  */
-                    HomeworkResultId = sId,
                     TaskText = x.TaskText,
                     Deadline = x.Deadline,
+                    HomeworkResultId = _db.HomeworkResults.Any(y => y.HomeworkId == x.Id && y.StudentId == sId) 
+                        ? _db.HomeworkResults.Where(y => y.HomeworkId == x.Id && y.StudentId == sId)
+                        .Select(y => y.Id).Single() : 0,
                     Attachments = x.Attachments
                 }).ToList());
             return View(homeworks);
@@ -122,7 +123,6 @@ namespace Diary.Web.Controllers
             var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());
             var sId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             //Attachment attachment = new Attachment { Name = uploadedFile.FileName };
-
             var homeworkResult = _db.Homeworks.Where(x => x.Id == HomeworkId).Select(x => new HomeworkResult
             {
                 ClassId = x.ClassId,
@@ -162,6 +162,56 @@ namespace Diary.Web.Controllers
             _db.SaveChanges();
             return RedirectToAction("Index", "Home");
         }
+        [HttpGet]
+        public IActionResult UpdateResponse(int HomeworkResultId)
+        {
+            var response = _db.HomeworkResults.Where(x => x.Id == HomeworkResultId).Select(x => new ViewUpdateResponse
+            {
+                SubjecName = x.Subject.Name,
+                Deadline = x.Homework.Deadline,
+                Grade = x.Grade,
+                TaskText = x.Homework.TaskText,
+                AttachmentsTeacher = x.Homework.Attachments,
+                AttachmentsStudent = x.Attachments,
+                SubjectId = x.Homework.SubjectId,
+                Title = x.Homework.Title
+            }).Single();
+            ViewData["SubjectName"] = _db.Subjects.Where(x => x.Id == response.SubjectId).Select(x => x.Name).Single().ToString();
+            return View(response);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateResponse([FromForm] ViewResponse viewResponse)
+        {
+            var response = _db.HomeworkResults.Where(x => x.Id == viewResponse.Id).FirstOrDefault();
+            response.Response = viewResponse.Response;
+            foreach (var file in viewResponse.Files)
+            {
+                if (file != null)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                        var extension = Path.GetExtension(file.FileName);
+                        var attachment = new Attachment
+                        {
+                            CreatedOn = DateTime.UtcNow,
+                            FileType = file.ContentType,
+                            Extension = extension,
+                            Name = fileName
+                        };
+                        using (var dataStream = new MemoryStream())
+                        {
+                            await file.CopyToAsync(dataStream);
+                            attachment.Data = dataStream.ToArray();
+                        }
+                        _db.Attachments.Add(attachment);
+                    }
+                }
+            }
+            _db.SaveChanges();
+            return RedirectToAction("ViewResponse");
+        }
+
         [HttpGet]
         public IActionResult ViewResponse()
         {

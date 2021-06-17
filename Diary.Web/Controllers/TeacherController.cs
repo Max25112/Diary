@@ -46,7 +46,7 @@ namespace Diary.Web.Controllers
                         .Where(x => x.Day == i + 1)
                         .Where(x => x.Teacher.UserId == uId)
                         .Where(x => x.Order == j + 1)
-                        .Select(x =>  x.Class.Name + "\n" + x.Subject.Name + "\nКб." + x.Cabinet ).Single().ToString();             
+                        .Select(x => x.Class.Name + "\n" + x.Subject.Name + "\nКб." + x.Cabinet).Single().ToString();
                 }
             }
             return View(Shedule);
@@ -77,8 +77,15 @@ namespace Diary.Web.Controllers
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             var time = model.Date.Add(model.Time.TimeOfDay);
-            var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, 
-                Deadline = time, Title = model.Title, SubjectId = model.SubjectId};
+            var homework = new Homework
+            {
+                ClassId = model.ClassId,
+                TaskText = model.TaskText,
+                TeacherId = tId,
+                Deadline = time,
+                Title = model.Title,
+                SubjectId = model.SubjectId
+            };
             _db.Homeworks.Add(homework);
             _db.SaveChanges();
             foreach (var file in Files)
@@ -116,14 +123,82 @@ namespace Diary.Web.Controllers
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             var homeworks = (_db.Homeworks.Where(x => x.TeacherId == tId).Select(x => new ViewHomework
             {
+                Id = x.Id,
                 Title = x.Title,
                 ClassName = x.Class.Name,
-                SubjectName=x.Subject.Name,
+                SubjectName = x.Subject.Name,
                 TaskText = x.TaskText,
                 Deadline = x.Deadline,
                 Attachments = x.Attachments
             }).ToList());
             return View(homeworks);
+        }
+        [HttpGet]
+        public IActionResult UpdateHomework(int HomeworkId)
+        {
+            var homework = _db.Homeworks.Where(x => x.Id == HomeworkId).Select(x => new HomeworkViewModel
+            {
+                TaskText = x.TaskText,
+                //DeadlineString = x.Deadline.ToString("yyyy-MM-dd HH:mm:ss").Replace(' ', 'T'),
+                //DateString = x.Deadline.ToShortDateString(),
+                Date = x.Deadline.Date,
+                TimeString = x.Deadline.ToShortTimeString(),
+                ClassName = x.Class.Name,
+                SubjectName = x.Subject.Name,
+                Title = x.Title,
+                SubjectId = x.SubjectId,
+                HomeworkId = HomeworkId
+            }).Single();
+            return View(homework);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateHomework([FromForm] HomeworkViewModel homeworkViewModel, [FromQuery] int HomeworkId)
+        {
+            Homework homework = _db.Homeworks.Where(x => x.Id == HomeworkId).Single();
+            homework.Deadline = homeworkViewModel.Date.Add(homeworkViewModel.Time.TimeOfDay);
+            homework.TaskText = homeworkViewModel.TaskText;
+            homework.Title = homeworkViewModel.Title;
+            _db.SaveChanges();
+            if (_db.Attachments.Any(x => x.HomeworkId == HomeworkId))
+            {
+                var listAttach = _db.Attachments.Where(x => x.HomeworkId == HomeworkId).ToList();
+                foreach (var a in listAttach)
+                {
+                    _db.Attachments.Remove(a);
+                }
+            }
+            foreach (var file in homeworkViewModel.Files)
+            {
+                if (file != null)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                        var extension = Path.GetExtension(file.FileName);
+                        var attachment = new Attachment
+                        {
+                            CreatedOn = DateTime.UtcNow,
+                            FileType = file.ContentType,
+                            Extension = extension,
+                            Name = fileName,
+                            //Homework = homework
+                            //HomeworkId = HomeworkId
+                        };
+                        using (var dataStream = new MemoryStream())
+                        {
+                            await file.CopyToAsync(dataStream);
+                            attachment.Data = dataStream.ToArray();
+                        }
+                        
+                        _db.Attachments.Add(attachment);
+                        _db.SaveChanges();
+                        attachment.Homework = homework;
+                        _db.SaveChanges();
+                    }
+                }
+            }
+            _db.SaveChanges();
+            return View();
         }
         [HttpGet]
         public IActionResult ViewResponse()
