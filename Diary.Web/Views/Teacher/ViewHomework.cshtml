@@ -11,6 +11,7 @@
                 <td>Предмет</td>
                 <td>Задание</td>
                 <td>Время</td>
+                <td>Файлы</td>
             </tr>
             @foreach (var item in Model)
             {
@@ -20,6 +21,13 @@
                     <td>@Html.DisplayFor(modelItem => item.SubjectName)</td>
                     <td>@Html.DisplayFor(modelItem => item.TaskText)</td>
                     <td>@Html.DisplayFor(modelItem => item.Deadline)</td>
+                    <td>
+                        @foreach (var doc in item.Attachments)
+                        {
+                            var Name = doc.Name + doc.Extension;
+                            <a type="button" class="btn btn-primary" asp-controller="Student" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
+                        }
+                    </td>
                 </tr>
             }
         </table>

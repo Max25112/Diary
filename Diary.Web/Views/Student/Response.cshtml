@@ -8,21 +8,43 @@
     <form method="post" enctype="multipart/form-data">
         <div class="form-group">
             <div class="col-md-10">
-                <p>Название: @Html.DisplayFor(modelItem => Model.Title)</p>
-                <p>Предмет:@ViewData["SubjectName"]</p>
-                <p>Задание:@Html.DisplayFor(modelItem => Model.TaskText)</p>
-                <p style="color:red">@Html.DisplayFor(modelItem => Model.Deadline)</p>
-                <p>HomeworkId: @Html.DisplayFor(modelItem => Model.HomeworkId, "HomeworkId")</p>
-                <div width="200">
+                <table class="table table-striped">
+                    <tr>
+                        <td>Название: </td>
+                        <td>@Html.DisplayFor(modelItem => Model.Title)</td>
+                    </tr>
+                    <tr>
+                        <td>Предмет:</td>
+                        <td>@ViewData["SubjectName"]</td>
+                    </tr>
+                    <tr>
+                        <td>Текст задания:</td>
+                        <td>@Html.DisplayFor(modelItem => Model.TaskText)</td>
+                    </tr>
+                    <tr>
+                        <td>Файлы</td>
+                        <td>
+                            @foreach (var doc in item.Attachments)
+                            {
+                                var Name = doc.Name + doc.Extension;
+                                <a type="button" class="btn btn-primary" asp-controller="Student" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Срок: </td>
+                        <td><p style="color:red">@Html.DisplayFor(modelItem => Model.Deadline)</p></td>
+                    </tr>
+                </table>
+                <div class="form-group">
                     <input asp-for="HomeworkId" class="form-control" type="file" name="Files" id="Files" size="5242880" accept=".xls,.xlsx,.csv,.CSV,.png,.jpeg,.jpg,.gif,.doc,.docx,.pdf,.PDF,.txt"  multiple/>
+                    <textarea name="Response" id="Response" rows="5" cols="90"></textarea>
                 </div>
-                <textarea name="Response" id="Response" rows="5" cols="90"></textarea>
-                <!-- /!-->
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-10">
-                <input class="btn btn-success" type="submit" value="Upload" />
+                <input class="btn btn-success" type="submit" value="Отправить" />
             </div>
         </div>
     </form>

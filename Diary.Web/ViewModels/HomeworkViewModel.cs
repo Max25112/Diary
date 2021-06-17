@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Diary.Web.Data;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -32,5 +33,6 @@ namespace Diary.Web.ViewModels
         [Display(Name = "Файл")]
         public IFormFile Files { get; set; }
         public int HomeworkId { get; set; }
+        public List<Attachment> Attachments { get; set; } = new();
     }
 }

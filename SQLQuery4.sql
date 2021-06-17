@@ -17,7 +17,7 @@ select * from HomeworkResults
 select HomeworkResults.Id, Classes.Name, HomeworkResults.ClassId, HomeworkResults.TeacherId, Grade from HomeworkResults, Classes, Teachers where HomeworkResults.ClassId=Classes.Id And
 Teachers.Id=HomeworkResults.TeacherId
 select * from Attachments
-select [Order] from Lessons
+select * from Lessons
 select * from AspNetRoles
 select * from AspNetUserRoles
 select * from AspNetUserRoles

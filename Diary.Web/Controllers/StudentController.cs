@@ -79,16 +79,23 @@ namespace Diary.Web.Controllers
         public IActionResult ViewHomework()
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var sId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());
-            var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId).Where(x => x.Deadline > DateTime.Now).Select(x => new ViewHomework
-            {
-                Id = x.Id,
-                Title = x.Title,
-                FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
-                SubjectName = x.Subject.Name,
-                TaskText = x.TaskText,
-                Deadline = x.Deadline,
-            }).ToList());
+            var homeworks = (_db.Homeworks.Where(x => x.ClassId == classId)
+                /*.Where(x => x.Deadline > DateTime.Now)*/
+                .Select(x => new ViewHomework
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    FIO = x.Teacher.User.LastName + " " + x.Teacher.User.FirstName[0] + "." + x.Teacher.User.MiddleName[0],
+                    SubjectName = x.Subject.Name,
+                   /*if(_db.HomeworkResults.Where(x=>x.HomeworkId==Id))
+                    IsExists =  */
+                    HomeworkResultId = sId,
+                    TaskText = x.TaskText,
+                    Deadline = x.Deadline,
+                    Attachments = x.Attachments
+                }).ToList());
             return View(homeworks);
         }
         [HttpGet]
@@ -101,6 +108,7 @@ namespace Diary.Web.Controllers
                 Deadline = x.Deadline,
                 TaskText = x.TaskText,
                 Title = x.Title,
+                Attachments = x.Attachments,
                 SubjectId = x.SubjectId
             }).Single();
             ViewData["SubjectName"] = _db.Subjects.Where(x => x.Id == homework.SubjectId).Select(x => x.Name).Single().ToString();
@@ -108,7 +116,7 @@ namespace Diary.Web.Controllers
             return View(homework);
         }
         [HttpPost]
-        public async Task<IActionResult> Response(int HomeworkId, [FromForm] List<IFormFile> Files, string Response)
+        public async Task<IActionResult> Response([FromQuery] int HomeworkId, [FromForm] List<IFormFile> Files, string Response)
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var classId = Convert.ToInt32(_db.Students.Where(x => x.UserId == uId).Select(x => x.ClassId).Single());
@@ -164,6 +172,7 @@ namespace Diary.Web.Controllers
                 Id = x.Id,
                 SubjecName = x.Subject.Name,
                 Deadline = x.Homework.Deadline,
+                Grade = x.Grade,
                 Attachments = x.Attachments,
                 Title = x.Homework.Title
             });

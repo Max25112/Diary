@@ -11,6 +11,8 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Diary.Web.Controllers
 {
@@ -70,13 +72,40 @@ namespace Diary.Web.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult AddHomework(HomeworkViewModel model)
+        public async Task<IActionResult> AddHomework(HomeworkViewModel model, [FromForm] List<IFormFile> Files)
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             var time = model.Date.Add(model.Time.TimeOfDay);
-            var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, Deadline = time, Title = model.Title, SubjectId = model.SubjectId };
+            var homework = new Homework { ClassId = model.ClassId, TaskText = model.TaskText, TeacherId = tId, 
+                Deadline = time, Title = model.Title, SubjectId = model.SubjectId};
             _db.Homeworks.Add(homework);
+            _db.SaveChanges();
+            foreach (var file in Files)
+            {
+                if (file != null)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                        var extension = Path.GetExtension(file.FileName);
+                        var attachment = new Attachment
+                        {
+                            CreatedOn = DateTime.UtcNow,
+                            FileType = file.ContentType,
+                            Extension = extension,
+                            Name = fileName,
+                            Homework = homework
+                        };
+                        using (var dataStream = new MemoryStream())
+                        {
+                            await file.CopyToAsync(dataStream);
+                            attachment.Data = dataStream.ToArray();
+                        }
+                        _db.Attachments.Add(attachment);
+                    }
+                }
+            }
             _db.SaveChanges();
             return RedirectToAction("Index", "Home");
         }
@@ -89,8 +118,10 @@ namespace Diary.Web.Controllers
             {
                 Title = x.Title,
                 ClassName = x.Class.Name,
+                SubjectName=x.Subject.Name,
                 TaskText = x.TaskText,
                 Deadline = x.Deadline,
+                Attachments = x.Attachments
             }).ToList());
             return View(homeworks);
         }
