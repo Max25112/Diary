@@ -1,0 +1,66 @@
+﻿@model Diary.Web.ViewModels.ViewResponse
+@{
+    ViewData["Title"] = "ViewResponse";
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <package id="jQuery" version="3.2.1" targetFramework="net45" />
+        <package id="Microsoft.AspNet.Mvc" version="5.2.3" targetFramework="net45" />
+    </head>
+}
+<div class="form-group">
+    <table>
+        <tr>
+            <td>Класс</td>
+            <td>@Html.DropDownListFor(m => m.ClassId, ViewBag.Classes as IEnumerable<SelectListItem>)</td>
+        </tr>
+    </table>
+    <a href="javascript:ViewGrade()" class="btn btn-primary">Показать</a><br />
+</div>
+@section Scripts {
+    <script>
+        function ViewGrade() {
+            var m = document.getElementById("ClassId").options.selectedIndex;
+            var ClassId = document.getElementById("ClassId").options[m].value;
+            var select = document.querySelector("select");
+            console.log(ClassId);
+            console.log(select);
+            if (document.getElementById('table'))
+                table.parentNode.removeChild(table);
+            fetch('/Teacher/SelectResponse', {
+                method: 'POST', 
+                body: JSON.stringify(ClassId),
+                headers: {
+                    'Accept': 'application/json; charset=utf-8',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            }).then(res => res.json())
+                .then(response => {
+                    var sub = JSON.parse(response);
+                    var size1 = sub.length;
+                    var size2 = sub[0].length;
+                    var newElem = document.createElement('table');
+                    newElem.setAttribute('width', '600px');
+                    newElem.setAttribute('text-align', 'center');
+                    newElem.setAttribute('id', 'table');
+                    newElem.setAttribute('name', 'table');
+                    newElem.setAttribute('class', 'table table-striped');
+                    for (let i = 0; i < size1; i++) {
+                        var newRow = newElem.insertRow(i);
+                        for (let j = 0; j < size2; j++) {
+                            var newCell = newRow.insertCell(j);
+                            newCell.setAttribute('width', '30px')
+                            newCell.innerHTML = sub[i][j];
+                        }
+                    }
+                    //console.log('size 1:', sub.length);
+                    //console.log('size 2:', sub[0].length);
+                    document.body.appendChild(newElem);
+                    //document.getElementById('_table').innerHTML = newElem;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+}

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Diary.Web.Controllers
 {
@@ -158,7 +159,6 @@ namespace Diary.Web.Controllers
             homework.Deadline = homeworkViewModel.Date.Add(homeworkViewModel.Time.TimeOfDay);
             homework.TaskText = homeworkViewModel.TaskText;
             homework.Title = homeworkViewModel.Title;
-            _db.SaveChanges();
             if (_db.Attachments.Any(x => x.HomeworkId == HomeworkId))
             {
                 var listAttach = _db.Attachments.Where(x => x.HomeworkId == HomeworkId).ToList();
@@ -181,7 +181,7 @@ namespace Diary.Web.Controllers
                             FileType = file.ContentType,
                             Extension = extension,
                             Name = fileName,
-                            //Homework = homework
+                            Homework = homework
                             //HomeworkId = HomeworkId
                         };
                         using (var dataStream = new MemoryStream())
@@ -189,16 +189,13 @@ namespace Diary.Web.Controllers
                             await file.CopyToAsync(dataStream);
                             attachment.Data = dataStream.ToArray();
                         }
-                        
+
                         _db.Attachments.Add(attachment);
-                        _db.SaveChanges();
-                        attachment.Homework = homework;
-                        _db.SaveChanges();
                     }
                 }
             }
             _db.SaveChanges();
-            return View();
+            return RedirectToAction("ViewHomework");
         }
         [HttpGet]
         public IActionResult ViewResponse()
@@ -210,7 +207,7 @@ namespace Diary.Web.Controllers
                 Id = x.Id,
                 SubjecName = x.Subject.Name,
                 Deadline = x.Homework.Deadline,
-                Attachments = x.Attachments,
+                AttachmentsStudent = x.Attachments,
                 Grade = x.Grade,
                 Response = x.Response,
                 Title = x.Homework.Title,
@@ -230,7 +227,7 @@ namespace Diary.Web.Controllers
                 Id = x.Id,
                 SubjecName = x.Subject.Name,
                 Deadline = x.Homework.Deadline,
-                Attachments = x.Attachments,
+                AttachmentsStudent = x.Attachments,
                 Response = x.Response,
                 Title = x.Homework.Title,
                 ClassName = x.Class.Name,
@@ -247,7 +244,9 @@ namespace Diary.Web.Controllers
                 Id = x.Id,
                 SubjecName = x.Subject.Name,
                 Grade = x.Grade,
-                Attachments = x.Attachments,
+                AttachmentsStudent = x.Attachments,
+                AttachmentsTeacher = x.Homework.Attachments,
+                TaskText = x.Homework.TaskText,
                 Response = x.Response,
                 ClassName = x.Class.Name,
                 StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
@@ -274,6 +273,78 @@ namespace Diary.Web.Controllers
         public IActionResult ViewGrade()
         {
             return View();
+        }
+        [HttpGet]
+        public IActionResult ViewProgress()
+        {
+            SelectList classes = new SelectList(_db.Classes, "Id", "Name");
+            ViewBag.Classes = classes;
+            return View();
+        }
+        [HttpPost]
+        public JsonResult SelectResponse([FromBody] int ClassId)
+        {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
+            int StudentLenght = _db.Students.Where(x => x.ClassId == Convert.ToInt32(ClassId)).Count();
+            int HomeworkLength = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(ClassId)).Count();
+            var students = _db.Students.Where(x => x.ClassId == Convert.ToInt32(ClassId))
+                .OrderBy(x => x.User.LastName)
+                .ThenBy(x => x.User.FirstName)
+                .ThenBy(x => x.User.MiddleName)
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    StudentName = x.User.LastName + " " + x.User.FirstName[0] + "." + x.User.MiddleName[0] + "."
+                }).ToList();
+            var titleHw = _db.Homeworks
+                .Where(x => x.ClassId == Convert.ToInt32(ClassId))
+                .Where(x => x.TeacherId == Convert.ToInt32(tId))
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    Title = x.Title
+                }).ToList();
+            string[,] Gr = new string[StudentLenght + 1, HomeworkLength + 2];
+            int n = 1;
+            foreach (var item in students)
+            {
+                Gr[n, 0] = item.StudentName;
+                n++;
+            }
+            n = 1;
+            foreach (var item in titleHw)
+            {
+                Gr[0, n] = item.Title;
+                n++;
+            }
+
+            for (int i = 1; i <= StudentLenght; i++)
+            {
+                for (int j = 1; j <= HomeworkLength; j++)
+                {
+                    if (!_db.HomeworkResults.Any(x => x.Homework.Id == titleHw[j - 1].Id
+                    && x.StudentId == students[i - 1].Id))
+                    {
+                        Gr[i, j] = "0";
+                        continue;
+                    }
+                    Gr[i, j] = _db.HomeworkResults
+                        .Where(x => x.Homework.Id == titleHw[j - 1].Id)
+                        .Where(x => x.StudentId == students[i - 1].Id)
+                        .Select(x => x.Grade).Single().ToString();
+                }
+            }
+            Gr[0, HomeworkLength+1] = "Средняя оценка";
+            for (int i = 1; i <= StudentLenght; i++)
+            {
+                double AVG = 0.0;
+                for (int j = 1; j <= HomeworkLength; j++)
+                    AVG += Convert.ToInt32(Gr[i, j]);
+                Gr[i, HomeworkLength + 1] = (AVG / (HomeworkLength)).ToString("0.0");
+            }
+            var res = JsonConvert.SerializeObject(Gr);
+            return Json(res);
         }
     }
 }

@@ -180,10 +180,18 @@ namespace Diary.Web.Controllers
             return View(response);
         }
         [HttpPost]
-        public async Task<IActionResult> UpdateResponse([FromForm] ViewResponse viewResponse)
+        public async Task<IActionResult> UpdateResponse([FromForm] ViewResponse viewResponse, [FromQuery] int HomeworkResultId)
         {
-            var response = _db.HomeworkResults.Where(x => x.Id == viewResponse.Id).FirstOrDefault();
+            var response = _db.HomeworkResults.Where(x => x.Id == HomeworkResultId).Single();
             response.Response = viewResponse.Response;
+            if (_db.Attachments.Any(x => x.HomeworkResultId == HomeworkResultId))
+            {
+                var listAttach = _db.Attachments.Where(x => x.HomeworkResultId == HomeworkResultId).ToList();
+                foreach (var a in listAttach)
+                {
+                    _db.Attachments.Remove(a);
+                }
+            }
             foreach (var file in viewResponse.Files)
             {
                 if (file != null)
@@ -223,7 +231,7 @@ namespace Diary.Web.Controllers
                 SubjecName = x.Subject.Name,
                 Deadline = x.Homework.Deadline,
                 Grade = x.Grade,
-                Attachments = x.Attachments,
+                AttachmentsStudent = x.Attachments,
                 Title = x.Homework.Title
             });
             return View(responses);

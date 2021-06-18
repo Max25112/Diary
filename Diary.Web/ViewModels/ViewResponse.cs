@@ -28,7 +28,9 @@ namespace Diary.Web.ViewModels
         public string SubjecName { get; set; }
         public string StudentName { get; set; }
         public string Response { get; set; }
+        public string TaskText { get; set; }
         public List<IFormFile> Files { get; set; }
-        public List<Attachment> Attachments { get; set; } = new();
+        public List<Attachment> AttachmentsStudent { get; set; } = new();
+        public List<Attachment> AttachmentsTeacher { get; set; } = new();
     }
 }

@@ -196,28 +196,6 @@ namespace Diary.Web.Controllers
         {
             int StudentLenght = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).Count();
             int HomeworkLength = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).Count();
-            /*
-            List<int> IdHomework = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId)).OrderBy(x => x.Id).Select(x => x.Id).ToList();
-            List<string> NameStudent = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
-                .Select(x => x.User.LastName + " " + x.User.FirstName[0] + "." + x.User.MiddleName[0] + ".").ToList();
-            var response = _db.HomeworkResults.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
-                .Where(x => x.TeacherId == Convert.ToInt32(teacherClass.TeacherId)).Select(x => new Grades
-                {
-                    HomeworkId = x.HomeworkId,
-                    StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + ".",
-                    Title = x.Homework.Title,
-                    Grade = x.Grade
-                }).ToList();
-            JsonGrade grades = new JsonGrade
-            {
-                StudentLenght = StudentLenght,
-                HomeworkLength = HomeworkLength,
-                NameStudent = NameStudent,
-                IdHomework = IdHomework,
-                Grades = response
-            };
-            */
-
             var students = _db.Students.Where(x => x.ClassId == Convert.ToInt32(teacherClass.ClassId))
                 .OrderBy(x => x.User.LastName)
                 .ThenBy(x => x.User.FirstName)

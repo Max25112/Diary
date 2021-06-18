@@ -1,27 +1,68 @@
 ﻿@model Diary.Web.ViewModels.ViewResponse
 @{
     ViewData["Title"] = "UpdateResponse";
-    
+
 
 }
 <div>
     <form method="post" enctype="multipart/form-data">
+
         <a href="#" class="btn btn-primary" onclick="return ChangeGrade(this);">Изменить оценку</a>
         <button type="submit" class="btn btn-primary">Сохранить</button>
-        <p>#@Model.Id</p>
-        <p>Дз: @Model.Title</p>
-        <p>Предмет: @Model.SubjecName</p>
-        <p>Класс: @Model.ClassName</p>
-        <p>Ученик @Model.StudentName</p>
-        <input value="@Model.Grade" size="1" disabled="disabled" name="Grade" id="Grade" /><br />
-        <p>@Model.Response</p>
-        <div>
-            @foreach (var doc in Model.Attachments)
-            {
-                var Name = doc.Name + doc.Extension;
-                <a type="button" class="btn btn-success" asp-controller="Teacher" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
-            }
-        </div>
+        <table class="table table-striped">
+            <tr>
+                <td>Дз: </td>
+                <td>@Model.Title</td>
+            </tr>
+            <tr>
+                <td>Предмет: </td>
+                <td>@Model.SubjecName</td>
+            </tr>
+            <tr>
+                <td>Задание: </td>
+                <td>@Model.TaskText</td>
+            </tr>
+            <tr>
+                <td>Файлы задания: </td>
+                <td>
+                    <div>
+                        @foreach (var doc in Model.AttachmentsTeacher)
+                        {
+                            var Name = doc.Name + doc.Extension;
+                            <a type="button" class="btn btn-success" asp-controller="Teacher" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Класс:</td>
+                <td>@Model.ClassName</td>
+            </tr>
+            <tr>
+                <td>Ученик</td>
+                <td>@Model.StudentName</td>
+            </tr>
+            <tr>
+                <td>Оценка</td>
+                <td> <input value="@Model.Grade" size="1" disabled="disabled" name="Grade" id="Grade" /></td>
+            </tr>
+            <tr>
+                <td>Ответ</td>
+                <td>@Model.Response</td>
+            </tr>
+            <tr>
+                <td>Файлы ученика</td>
+                <td>
+                    <div>
+                        @foreach (var doc in Model.AttachmentsStudent)
+                        {
+                            var Name = doc.Name + doc.Extension;
+                            <a type="button" class="btn btn-success" asp-controller="Teacher" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
+                        }
+                    </div>
+                </td>
+            </tr>
+        </table>
         <!--<input type="submit" name="buttonSubmit" value="Сохранить изменения" /-->
     </form>
 </div>

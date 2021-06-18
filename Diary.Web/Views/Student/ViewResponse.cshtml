@@ -22,7 +22,7 @@
                     <th>@item.SubjecName</th>
                     <th>@item.Grade</th>
                     <td>
-                        @foreach (var doc in item.Attachments)
+                        @foreach (var doc in item.AttachmentsStudent)
                         {
                             var Name = doc.Name + doc.Extension;
                             <a type="button" class="btn btn-primary" asp-controller="Student" asp-action="DownloadFile" id="@doc.Id" asp-route-id="@doc.Id">@doc.Name@doc.Extension</a>
