@@ -7,7 +7,7 @@
 <div>
     <form method="post" enctype="multipart/form-data">
 
-        <a href="#" class="btn btn-primary" onclick="return ChangeGrade(this);">Изменить оценку</a>
+        <!--<a href="#" class="btn btn-primary" onclick="return ChangeGrade(this);">Изменить оценку</a>-->
         <button type="submit" class="btn btn-primary">Сохранить</button>
         <table class="table table-striped">
             <tr>
@@ -35,16 +35,20 @@
                 </td>
             </tr>
             <tr>
+                <td>Оценка</td>
+                <td> <input asp-for="Grade" value="@Model.Grade" size="2" name="Grade" id="Grade" /></td> <!--disabled="disabled"-->
+            </tr>
+            <tr>
+                <td>Замечание:</td>
+                <td><input asp-for="Comment" value="@Model.Comment" name="Comment" id="Comment" autocomplete="off" /></td>
+            </tr>
+            <tr>
                 <td>Класс:</td>
                 <td>@Model.ClassName</td>
             </tr>
             <tr>
                 <td>Ученик</td>
                 <td>@Model.StudentName</td>
-            </tr>
-            <tr>
-                <td>Оценка</td>
-                <td> <input value="@Model.Grade" size="1" disabled="disabled" name="Grade" id="Grade" /></td>
             </tr>
             <tr>
                 <td>Ответ</td>

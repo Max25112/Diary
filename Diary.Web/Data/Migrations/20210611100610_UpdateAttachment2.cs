@@ -30,7 +30,7 @@ namespace Diary.Web.Data.Migrations
                 column: "HomeworkResultId",
                 principalTable: "HomeworkResults",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.NoAction);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -60,7 +60,7 @@ namespace Diary.Web.Data.Migrations
                 column: "HomeworkResultId",
                 principalTable: "HomeworkResults",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                onDelete: ReferentialAction.NoAction);
         }
     }
 }

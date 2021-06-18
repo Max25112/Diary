@@ -130,7 +130,8 @@ namespace Diary.Web.Controllers
                 StudentId = sId,
                 HomeworkId = x.Id,
                 SubjectId = x.SubjectId,
-                TeacherId = x.TeacherId
+                TeacherId = x.TeacherId,
+                DateAdd = DateTime.UtcNow
             }).Single();
             _db.HomeworkResults.Add(homeworkResult);
             _db.SaveChanges();
@@ -184,6 +185,7 @@ namespace Diary.Web.Controllers
         {
             var response = _db.HomeworkResults.Where(x => x.Id == HomeworkResultId).Single();
             response.Response = viewResponse.Response;
+            response.DateAdd = DateTime.UtcNow;
             if (_db.Attachments.Any(x => x.HomeworkResultId == HomeworkResultId))
             {
                 var listAttach = _db.Attachments.Where(x => x.HomeworkResultId == HomeworkResultId).ToList();
@@ -231,6 +233,7 @@ namespace Diary.Web.Controllers
                 SubjecName = x.Subject.Name,
                 Deadline = x.Homework.Deadline,
                 Grade = x.Grade,
+                Comment=x.Сomment,
                 AttachmentsStudent = x.Attachments,
                 Title = x.Homework.Title
             });

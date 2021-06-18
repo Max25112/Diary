@@ -157,7 +157,7 @@ namespace Diary.Web.Controllers
             var lesson = new Lesson { TeacherId = model.TeacherId, ClassId = model.ClassId, Cabinet = model.Cabinet, Day = model.Day, Order = model.Order, SubjectId = model.SubjectId };
             _db.Lessons.Add(lesson);
             _db.SaveChanges();
-            return View();
+            return RedirectToAction("AddLesson");
         }
         [HttpPost]
         public JsonResult SelectSub([FromBody] string TeacherId)

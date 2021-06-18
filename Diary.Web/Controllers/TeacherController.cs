@@ -209,6 +209,7 @@ namespace Diary.Web.Controllers
                 Deadline = x.Homework.Deadline,
                 AttachmentsStudent = x.Attachments,
                 Grade = x.Grade,
+                DateAdd = x.DateAdd.ToString("dd/MM/yyyy h:mm"),
                 Response = x.Response,
                 Title = x.Homework.Title,
                 ClassName = x.Class.Name,
@@ -236,9 +237,9 @@ namespace Diary.Web.Controllers
             return;
         }
         [HttpGet]
-        public IActionResult UpdateResponse(int id)
+        public IActionResult UpdateResponse(int HomeworkResultId)
         {
-            var responses = _db.HomeworkResults.Where(x => x.Id == id).Select(x => new ViewResponse
+            var responses = _db.HomeworkResults.Where(x => x.Id == HomeworkResultId).Select(x => new ViewResponse
             {
                 Title = x.Homework.Title,
                 Id = x.Id,
@@ -249,17 +250,19 @@ namespace Diary.Web.Controllers
                 TaskText = x.Homework.TaskText,
                 Response = x.Response,
                 ClassName = x.Class.Name,
+                Comment = x.Сomment,
                 StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
             }).Single();
             return View(responses);
         }
 
         [HttpPost]
-        public IActionResult UpdateResponse(int Id, int Grade)
+        public IActionResult UpdateResponse([FromQuery] int HomeworkResultId, ViewResponse viewResponse)
         {
-            var response = _db.HomeworkResults.Where(x => x.Id == Id).FirstOrDefault();
-            response.Grade = Grade;
-            _db.SaveChanges();
+            var response = _db.HomeworkResults.Where(x => x.Id == HomeworkResultId).FirstOrDefault();
+            response.Grade = viewResponse.Grade;
+            response.Сomment = viewResponse.Comment;
+            _db.SaveChanges(); 
             return RedirectToAction("ViewResponse");
         }
         public IActionResult DownloadFile(int id)
@@ -270,15 +273,23 @@ namespace Diary.Web.Controllers
             return File(file.Data, file.FileType, file.Name + file.Extension);
         }
         [HttpGet]
-        public IActionResult ViewGrade()
-        {
-            return View();
-        }
-        [HttpGet]
         public IActionResult ViewProgress()
         {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
+            var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == tId).Select(u => new
+            {
+                usub = u.Subjects
+            }).ToList();
+            var sub = new List<Sub>();
+            for (int i = 0; i < teacherSubject.Count + 1; i++)
+            {
+                sub.Add(new Sub(teacherSubject[0].usub[i].Id, teacherSubject[0].usub[i].Name));
+            }
             SelectList classes = new SelectList(_db.Classes, "Id", "Name");
             ViewBag.Classes = classes;
+            SelectList subjects = new(sub, "Id", "Name");
+            ViewBag.Subjects = subjects;
             return View();
         }
         [HttpPost]

@@ -16,6 +16,10 @@
             <td>Класс</td>
             <td>@Html.DropDownListFor(m => m.ClassId, ViewBag.Classes as IEnumerable<SelectListItem>)</td>
         </tr>
+        <tr>
+            <td>Предмет</td>
+            <td>@Html.DropDownListFor(m => m.SubjectId, ViewBag.Subjects as IEnumerable<SelectListItem>)</td>
+        </tr>
     </table>
     <a href="javascript:ViewGrade()" class="btn btn-primary">Показать</a><br />
 </div>

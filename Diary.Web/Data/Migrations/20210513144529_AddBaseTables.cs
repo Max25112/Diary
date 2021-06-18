@@ -203,13 +203,13 @@ namespace Diary.Web.Data.Migrations
                         column: x => x.HomeResultId,
                         principalTable: "HomeResults",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Attachments_Homeworks_HomeworkId",
                         column: x => x.HomeworkId,
                         principalTable: "Homeworks",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(

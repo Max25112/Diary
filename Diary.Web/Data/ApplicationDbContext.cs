@@ -102,6 +102,8 @@ namespace Diary.Web.Data
         public Class Class { get; set; }//Класс
         public int SubjectId { get; set; }
         public Subject Subject { get; set; }
+        public DateTime DateAdd { get; set; }
+        public string Сomment { get; set; }
         [Required()]
         public int StudentId { get; set; }
         public Student Student { get; set; }

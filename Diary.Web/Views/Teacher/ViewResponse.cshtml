@@ -12,6 +12,7 @@
                     <th>Название</th>
                     <th>Предмет</th>
                     <th>Оценка</th>
+                    <th>Дата</th>
                     <th>Ответы</th>
                 </tr>
             </thead>
@@ -24,7 +25,8 @@
                         <th>@item.Title</th>
                         <th>@item.SubjecName</th>
                         <th><input value="@item.Grade" size="1" disabled="disabled" name="input" id="input" /></th>
-                        <th>@Html.ActionLink("Посмотреть", "UpdateResponse", new { id = item.Id }, null)</th>
+                        <th>@item.DateAdd</th>
+                        <th>@Html.ActionLink("Посмотреть", "UpdateResponse", new { HomeworkResultId = item.Id }, null)</th>
                     </tr>
                 }
             </tbody>
