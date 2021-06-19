@@ -59,16 +59,7 @@ namespace Diary.Web.Controllers
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
             SelectList classes = new(_db.Classes, "Id", "Name");
             ViewBag.Classes = classes;
-            var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == tId).Select(u => new
-            {
-                usub = u.Subjects
-            }).ToList();
-            var sub = new List<Sub>();
-            for (int i = 0; i < teacherSubject.Count + 1; i++)
-            {
-                sub.Add(new Sub(teacherSubject[0].usub[i].Id, teacherSubject[0].usub[i].Name));
-            }
-            SelectList subjects = new(sub, "Id", "Name");
+            SelectList subjects = new(ListSub(tId), "Id", "Name");
             ViewBag.Subjects = subjects;
             return View();
         }
@@ -122,16 +113,45 @@ namespace Diary.Web.Controllers
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
-            var homeworks = (_db.Homeworks.Where(x => x.TeacherId == tId).Select(x => new ViewHomework
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ClassName = x.Class.Name,
-                SubjectName = x.Subject.Name,
-                TaskText = x.TaskText,
-                Deadline = x.Deadline,
-                Attachments = x.Attachments
-            }).ToList());
+            SelectList classes = new SelectList(_db.Classes, "Id", "Name");
+            ViewBag.Classes = classes;
+            SelectList subjects = new(ListSub(tId), "Id", "Name");
+            ViewBag.Subjects = subjects;
+            var homeworks = (_db.Homeworks.Where(x => x.TeacherId == tId)
+               .Select(x => new ViewHomework
+               {
+                   Id = x.Id,
+                   Title = x.Title,
+                   ClassName = x.Class.Name,
+                   SubjectName = x.Subject.Name,
+                   TaskText = x.TaskText,
+                   Deadline = x.Deadline,
+                   Attachments = x.Attachments
+               }).ToList());
+            return View(homeworks);
+        }
+        [HttpPost]
+        public IActionResult ViewHomework(ViewHomework viewHomework)
+        {
+            var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).FirstOrDefault());
+            SelectList classes = new SelectList(_db.Classes, "Id", "Name");
+            ViewBag.Classes = classes;
+            SelectList subjects = new(ListSub(tId), "Id", "Name");
+            ViewBag.Subjects = subjects;
+            var homeworks = (_db.Homeworks.Where(x => x.TeacherId == tId)
+                .Where(x => x.SubjectId == Convert.ToInt32(viewHomework.SubjectId))
+                .Where(x => x.ClassId == Convert.ToInt32(viewHomework.ClassId))
+                .Select(x => new ViewHomework
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    ClassName = x.Class.Name,
+                    SubjectName = x.Subject.Name,
+                    TaskText = x.TaskText,
+                    Deadline = x.Deadline,
+                    Attachments = x.Attachments
+                }).ToList());
             return View(homeworks);
         }
         [HttpGet]
@@ -140,8 +160,6 @@ namespace Diary.Web.Controllers
             var homework = _db.Homeworks.Where(x => x.Id == HomeworkId).Select(x => new HomeworkViewModel
             {
                 TaskText = x.TaskText,
-                //DeadlineString = x.Deadline.ToString("yyyy-MM-dd HH:mm:ss").Replace(' ', 'T'),
-                //DateString = x.Deadline.ToShortDateString(),
                 Date = x.Deadline.Date,
                 TimeString = x.Deadline.ToShortTimeString(),
                 ClassName = x.Class.Name,
@@ -201,40 +219,59 @@ namespace Diary.Web.Controllers
         public IActionResult ViewResponse()
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
-            var responses = _db.HomeworkResults.Where(x => x.TeacherId == tId).Select(x => new ViewResponse
-            {
-                Id = x.Id,
-                SubjecName = x.Subject.Name,
-                Deadline = x.Homework.Deadline,
-                AttachmentsStudent = x.Attachments,
-                Grade = x.Grade,
-                DateAdd = x.DateAdd.ToString("dd/MM/yyyy h:mm"),
-                Response = x.Response,
-                Title = x.Homework.Title,
-                ClassName = x.Class.Name,
-                StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
-            });
-            ViewBag.Disabled = "disabled";
+            var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).FirstOrDefault());
+            SelectList classes = new SelectList(_db.Classes, "Id", "Name");
+            ViewBag.Classes = classes;
+            SelectList subjects = new(ListSub(tId), "Id", "Name");
+            ViewBag.Subjects = subjects;
+            var responses = _db.HomeworkResults.Where(x => x.TeacherId == tId)
+                .Select(x => new ViewResponse
+                {
+                    Id = x.Id,
+                    SubjecName = x.Subject.Name,
+                    Deadline = x.Homework.Deadline,
+                    AttachmentsStudent = x.Attachments,
+                    Grade = x.Grade,
+                    DateAdd = x.DateAdd.ToString("dd/MM/yyyy h:mm"),
+                    Response = x.Response,
+                    Title = x.Homework.Title,
+                    ClassName = x.Class.Name,
+                    StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
+                });
             return View(responses);
         }
         [HttpPost]
-        public void ViewResponse(List<ViewResponse> viewResponses, List<IdGrade> IdGrade)
+        public IActionResult ViewResponse(ViewResponse viewResponses)
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
-            var responses = _db.HomeworkResults.Where(x => x.TeacherId == tId).Select(x => new ViewResponse
-            {
-                Id = x.Id,
-                SubjecName = x.Subject.Name,
-                Deadline = x.Homework.Deadline,
-                AttachmentsStudent = x.Attachments,
-                Response = x.Response,
-                Title = x.Homework.Title,
-                ClassName = x.Class.Name,
-                StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
-            });
-            return;
+            SelectList classes = new SelectList(_db.Classes, "Id", "Name");
+            ViewBag.Classes = classes;
+            SelectList subjects = new(ListSub(tId), "Id", "Name");
+            ViewBag.Subjects = subjects;
+            var responses = _db.HomeworkResults.Where(x => x.TeacherId == tId)
+                .Where(x => x.ClassId == viewResponses.ClassId)
+                .Where(x => x.SubjectId == viewResponses.SubjectId)
+                .Select(x => new ViewResponse
+                {
+                    Id = x.Id,
+                    SubjecName = x.Subject.Name,
+                    Deadline = x.Homework.Deadline,
+                    AttachmentsStudent = x.Attachments,
+                    Grade = x.Grade,
+                    DateAdd = x.DateAdd.ToString("dd/MM/yyyy h:mm"),
+                    Response = x.Response,
+                    Title = x.Homework.Title,
+                    ClassName = x.Class.Name,
+                    StudentName = x.Student.User.LastName + " " + x.Student.User.FirstName[0] + "." + x.Student.User.MiddleName[0] + "."
+                });
+            return View(responses);
+        }
+        [HttpPost]
+        public IActionResult SelectHomework(int tId, int sId)
+        {
+
+            return View();
         }
         [HttpGet]
         public IActionResult UpdateResponse(int HomeworkResultId)
@@ -262,7 +299,7 @@ namespace Diary.Web.Controllers
             var response = _db.HomeworkResults.Where(x => x.Id == HomeworkResultId).FirstOrDefault();
             response.Grade = viewResponse.Grade;
             response.Сomment = viewResponse.Comment;
-            _db.SaveChanges(); 
+            _db.SaveChanges();
             return RedirectToAction("ViewResponse");
         }
         public IActionResult DownloadFile(int id)
@@ -277,18 +314,9 @@ namespace Diary.Web.Controllers
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
-            var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == tId).Select(u => new
-            {
-                usub = u.Subjects
-            }).ToList();
-            var sub = new List<Sub>();
-            for (int i = 0; i < teacherSubject.Count + 1; i++)
-            {
-                sub.Add(new Sub(teacherSubject[0].usub[i].Id, teacherSubject[0].usub[i].Name));
-            }
             SelectList classes = new SelectList(_db.Classes, "Id", "Name");
             ViewBag.Classes = classes;
-            SelectList subjects = new(sub, "Id", "Name");
+            SelectList subjects = new(ListSub(tId), "Id", "Name");
             ViewBag.Subjects = subjects;
             return View();
         }
@@ -297,8 +325,6 @@ namespace Diary.Web.Controllers
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
-            //int StudentLenght = _db.Students.Where(x => x.ClassId == Convert.ToInt32(subjectClass.ClassId)).Count();
-            //int HomeworkLength = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(subjectClass.ClassId)).Count();
             var students = _db.Students.Where(x => x.ClassId == Convert.ToInt32(subjectClass.ClassId))
                 .OrderBy(x => x.User.LastName)
                 .ThenBy(x => x.User.FirstName)
@@ -349,7 +375,7 @@ namespace Diary.Web.Controllers
                         .Select(x => x.Grade).Single().ToString();
                 }
             }
-            Gr[0, HomeworkLength+1] = "Средняя оценка";
+            Gr[0, HomeworkLength + 1] = "Средняя оценка";
             for (int i = 1; i <= StudentLenght; i++)
             {
                 double AVG = 0.0;
@@ -360,6 +386,19 @@ namespace Diary.Web.Controllers
             var res = JsonConvert.SerializeObject(Gr);
             return Json(res);
         }
+        private List<Sub> ListSub(int tId)
+        {
+            var teacherSubject = _db.Teachers.Include("Subjects").Where(u => u.Id == tId).Select(u => new
+            {
+                usub = u.Subjects
+            }).ToList();
+            var sub = new List<Sub>();
+            for (int i = 0; i < teacherSubject.Count + 1; i++)
+            {
+                sub.Add(new Sub(teacherSubject[0].usub[i].Id, teacherSubject[0].usub[i].Name));
+            }
+            return sub;
+        }
     }
     public class SubjectClass
     {
@@ -367,4 +406,3 @@ namespace Diary.Web.Controllers
         public string SubjectId { get; set; }
     }
 }
-

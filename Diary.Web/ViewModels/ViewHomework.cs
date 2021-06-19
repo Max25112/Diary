@@ -15,6 +15,7 @@ namespace Diary.Web.ViewModels
         public int HomeworkResultId { get; set; }
         public bool IsExists { get; set; }
         public int ClassId { get; set; }
+        public int SubjectId { get; set; }
         public string ClassName { get; set; }
         public string Title { get; set; }
         public string TaskText { get; set; }

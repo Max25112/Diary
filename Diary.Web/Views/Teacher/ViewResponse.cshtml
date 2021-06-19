@@ -2,21 +2,43 @@
 @{
     ViewData["Title"] = "ViewResponse";
 }
-<div>   
+<div>
     <form method="post">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Ученик</th>
-                    <th>Название</th>
-                    <th>Предмет</th>
-                    <th>Оценка</th>
-                    <th>Дата</th>
-                    <th>Ответы</th>
-                </tr>
-            </thead>
-            <tbody>
+        <table>
+            <tr>
+                <td>Класс</td>
+                <td>@Html.DropDownList("ClassId", ViewBag.Classes as IEnumerable<SelectListItem>)</td>
+            </tr>
+            <tr>
+                <td>Предмет</td>
+                <td>@Html.DropDownList("SubjectId", ViewBag.Subjects as IEnumerable<SelectListItem>)</td>
+            </tr>
+            <tr>
+                <td>Задание</td>
+                <td>
+                    <select id="HomeworkId" name="HomeworkId">
+                        <option value="0">Не выбран</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <button type="submit" class="btn btn-primary">Показать</button>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Ученик</th>
+                <th>Название</th>
+                <th>Предмет</th>
+                <th>Оценка</th>
+                <th>Дата</th>
+                <th>Ответы</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
                 @foreach (var item in Model)
                 {
                     <tr>
@@ -29,7 +51,41 @@
                         <th>@Html.ActionLink("Посмотреть", "UpdateResponse", new { HomeworkResultId = item.Id }, null)</th>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </form>
+            }
+        </tbody>
+    </table>
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        var url = '/Teacher/SelectSub';
+        var data = { TeacherId: '1' };
+        var select = document.querySelector("HomeworkId");
+        let item = {
+            SubjectId: SubjectId,
+            ClassId: ClassId
+        };
+        select.addEventListener('change', function (e) {
+            //console.log("Changed to: " + e.target.value)
+            fetch(url, {
+                method: 'POST', // or 'PUT'
+                body: JSON.stringify(item), // data can be `string` or {object}!
+                headers: {
+                    'Accept': 'application/json; charset=utf-8',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                }
+            }).then(res => res.json())
+                .then(response => {
+
+                    var items = JSON.stringify(response);
+                    var sub = JSON.parse(items);
+                    console.log('Success:', sub);
+                    console.log('Lenght:', sub.length);
+                    for (i = 0; i < sub.length; ++i) {
+                        $('#SubjectId').append('<option value="' + sub[i].id + '">' + sub[i].name + '</option>');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        })
+    </script>
+}
