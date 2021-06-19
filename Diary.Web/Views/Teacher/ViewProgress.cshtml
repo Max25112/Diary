@@ -26,16 +26,22 @@
 @section Scripts {
     <script>
         function ViewGrade() {
+            var n = document.getElementById("SubjectId").options.selectedIndex;
             var m = document.getElementById("ClassId").options.selectedIndex;
             var ClassId = document.getElementById("ClassId").options[m].value;
+            var SubjectId = document.getElementById("SubjectId").options[n].value;
             var select = document.querySelector("select");
+            let item = {
+                SubjectId: SubjectId,
+                ClassId: ClassId
+            };
             console.log(ClassId);
-            console.log(select);
+            console.log(SubjectId);
             if (document.getElementById('table'))
                 table.parentNode.removeChild(table);
             fetch('/Teacher/SelectResponse', {
                 method: 'POST', 
-                body: JSON.stringify(ClassId),
+                body: JSON.stringify(item),
                 headers: {
                     'Accept': 'application/json; charset=utf-8',
                     'Content-Type': 'application/json;charset=UTF-8'

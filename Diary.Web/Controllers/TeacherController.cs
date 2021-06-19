@@ -159,18 +159,18 @@ namespace Diary.Web.Controllers
             homework.Deadline = homeworkViewModel.Date.Add(homeworkViewModel.Time.TimeOfDay);
             homework.TaskText = homeworkViewModel.TaskText;
             homework.Title = homeworkViewModel.Title;
-            if (_db.Attachments.Any(x => x.HomeworkId == HomeworkId))
-            {
-                var listAttach = _db.Attachments.Where(x => x.HomeworkId == HomeworkId).ToList();
-                foreach (var a in listAttach)
-                {
-                    _db.Attachments.Remove(a);
-                }
-            }
             foreach (var file in homeworkViewModel.Files)
             {
                 if (file != null)
                 {
+                    if (_db.Attachments.Any(x => x.HomeworkId == HomeworkId))
+                    {
+                        var listAttach = _db.Attachments.Where(x => x.HomeworkId == HomeworkId).ToList();
+                        foreach (var a in listAttach)
+                        {
+                            _db.Attachments.Remove(a);
+                        }
+                    }
                     if (file.Length > 0)
                     {
                         var fileName = Path.GetFileNameWithoutExtension(file.FileName);
@@ -293,13 +293,13 @@ namespace Diary.Web.Controllers
             return View();
         }
         [HttpPost]
-        public JsonResult SelectResponse([FromBody] int ClassId)
+        public JsonResult SelectResponse([FromBody] SubjectClass subjectClass)
         {
             var uId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var tId = Convert.ToInt32(_db.Teachers.Where(x => x.UserId == uId).Select(x => x.Id).Single());
-            int StudentLenght = _db.Students.Where(x => x.ClassId == Convert.ToInt32(ClassId)).Count();
-            int HomeworkLength = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(ClassId)).Count();
-            var students = _db.Students.Where(x => x.ClassId == Convert.ToInt32(ClassId))
+            //int StudentLenght = _db.Students.Where(x => x.ClassId == Convert.ToInt32(subjectClass.ClassId)).Count();
+            //int HomeworkLength = _db.Homeworks.Where(x => x.ClassId == Convert.ToInt32(subjectClass.ClassId)).Count();
+            var students = _db.Students.Where(x => x.ClassId == Convert.ToInt32(subjectClass.ClassId))
                 .OrderBy(x => x.User.LastName)
                 .ThenBy(x => x.User.FirstName)
                 .ThenBy(x => x.User.MiddleName)
@@ -309,13 +309,16 @@ namespace Diary.Web.Controllers
                     StudentName = x.User.LastName + " " + x.User.FirstName[0] + "." + x.User.MiddleName[0] + "."
                 }).ToList();
             var titleHw = _db.Homeworks
-                .Where(x => x.ClassId == Convert.ToInt32(ClassId))
+                .Where(x => x.ClassId == Convert.ToInt32(subjectClass.ClassId))
                 .Where(x => x.TeacherId == Convert.ToInt32(tId))
+                .Where(x => x.SubjectId == Convert.ToInt32(subjectClass.SubjectId))
                 .Select(x => new
                 {
                     Id = x.Id,
                     Title = x.Title
                 }).ToList();
+            int StudentLenght = students.Count();
+            int HomeworkLength = titleHw.Count();
             string[,] Gr = new string[StudentLenght + 1, HomeworkLength + 2];
             int n = 1;
             foreach (var item in students)
@@ -337,7 +340,7 @@ namespace Diary.Web.Controllers
                     if (!_db.HomeworkResults.Any(x => x.Homework.Id == titleHw[j - 1].Id
                     && x.StudentId == students[i - 1].Id))
                     {
-                        Gr[i, j] = "0";
+                        Gr[i, j] = "2";
                         continue;
                     }
                     Gr[i, j] = _db.HomeworkResults
@@ -357,6 +360,11 @@ namespace Diary.Web.Controllers
             var res = JsonConvert.SerializeObject(Gr);
             return Json(res);
         }
+    }
+    public class SubjectClass
+    {
+        public string ClassId { get; set; }
+        public string SubjectId { get; set; }
     }
 }
 

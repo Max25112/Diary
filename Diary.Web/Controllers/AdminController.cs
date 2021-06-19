@@ -259,20 +259,4 @@ namespace Diary.Web.Controllers
         public string ClassId { get; set; }
         public string TeacherId { get; set; }
     }
-    public class Grades
-    {
-        public int HomeworkId { get; set; }
-        public int Grade { get; set; }
-        public string StudentName { get; set; }
-        public string Title { get; set; }
-
-    }
-    public class JsonGrade
-    {
-        public int StudentLenght { get; set; }
-        public int HomeworkLength { get; set; }
-        public List<string> NameStudent { get; set; } = new();
-        public List<int> IdHomework { get; set; } = new();
-        public List<Grades> Grades { get; set; } = new();
-    }
 }
